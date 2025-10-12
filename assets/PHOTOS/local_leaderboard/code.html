@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Leaderboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#13a4ec",
+              "background-light": "#f6f7f8",
+              "background-dark": "#101c22",
+            },
+            fontFamily: {
+              "display": ["Space Grotesk", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .gold-border { border-color: #FFD700; }
+        .silver-border { border-color: #C0C0C0; }
+        .bronze-border { border-color: #CD7F32; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-white">
+<div class="relative flex min-h-screen w-full flex-col bg-background-dark group/design-root overflow-x-hidden">
+<div class="flex items-center p-4 pb-2 justify-between bg-background-dark">
+<div class="text-white flex size-12 shrink-0 items-center">
+<span class="material-symbols-outlined text-3xl">arrow_back_ios</span>
+</div>
+<h2 class="text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Local Leaderboard</h2>
+<div class="flex w-12 items-center justify-end">
+<button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 bg-transparent text-white gap-2 text-base font-bold leading-normal tracking-[0.015em] min-w-0 p-0">
+<span class="material-symbols-outlined text-3xl text-yellow-400">emoji_events</span>
+</button>
+</div>
+</div>
+<div class="flex px-4 py-3">
+<div class="flex h-10 flex-1 items-center justify-center rounded-lg bg-background-light/10 p-1">
+<label class="flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-lg px-2 has-[:checked]:bg-primary has-[:checked]:shadow-[0_0_4px_rgba(19,164,236,0.5)] has-[:checked]:text-white text-gray-400 text-sm font-medium leading-normal">
+<span class="truncate">This Week</span>
+<input checked="" class="invisible w-0" name="leaderboard-filter" type="radio" value="Weekly"/>
+</label>
+<label class="flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-lg px-2 has-[:checked]:bg-primary has-[:checked]:shadow-[0_0_4px_rgba(19,164,236,0.5)] has-[:checked]:text-white text-gray-400 text-sm font-medium leading-normal">
+<span class="truncate">All Time</span>
+<input class="invisible w-0" name="leaderboard-filter" type="radio" value="All Time"/>
+</label>
+</div>
+</div>
+<div class="flex justify-center items-end p-4 gap-4">
+<div class="flex flex-col items-center">
+<div class="relative">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full w-24 h-24 border-4 silver-border" data-alt="George's profile picture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCJj8e49tVpz8hUZwqK6Bk62txDWkt-TV_UxKomdKhw2X8DdwQwv4g4iyckhmhI_Lf73F96VxxwAk3w71ygIqXAzolf5lGqDMu9s65X_pbU9FNGKvtGw2GEsWqS8SxFGh7a8D3ekOgHBSFoLUoJ6o7fcP61ovyEo8cxnW39dw_YDjWBq90NuqLpDyxOlXRE66Bq4U64jKUlCGKkSwue1TsZCyFxNJB7RcrWoRLIAAm9ca9FQsP9ZIqat-a0vaYqemR2VfjnpgNy_KE");'></div>
+<span class="absolute -bottom-2 -right-2 text-3xl">🥈</span>
+</div>
+<div class="flex flex-col items-center justify-center mt-2">
+<p class="text-white text-lg font-bold">george_22</p>
+<p class="text-gray-400 text-sm">1,200 XP</p>
+</div>
+</div>
+<div class="flex flex-col items-center mx-2">
+<div class="relative">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full w-32 h-32 border-4 gold-border" data-alt="Samantha's profile picture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCp3sv3E4v724lkvWYLM4KMbn40GCq_e22gpy17NgPI5nkC9jAQQrJsG6CpzGQ0rLaFxbhunwR58PEfNfQwozk30hXhCGZ6iZ2QmdbFRKsNoloV5NZSUOgYEyLYDKkVO7YIZ59UMJm5F-pMxpL1_ELhwguYidmrVh-rpg2ylb3XvaTCk2zd0FZltaHJrg5iEOprXTu6QhPE_DDApn8LHgDewNLYCiWJ2pEhKfRRkqJLLCyOtxt9qO5VtKIHS7N3y-k3MzkYJ9wyGjI");'></div>
+<span class="absolute -bottom-2 -right-2 text-4xl">👑</span>
+</div>
+<div class="flex flex-col items-center justify-center mt-2">
+<p class="text-white text-xl font-bold">samantha_jones</p>
+<p class="text-yellow-400 text-base">1,500 XP</p>
+</div>
+</div>
+<div class="flex flex-col items-center">
+<div class="relative">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full w-24 h-24 border-4 bronze-border" data-alt="Sarah's profile picture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBTsNml7z09sKRLcON5lixZACid9N76AZFX6oItS_xzVI-pr99zytCyhjrtVtsTPGJci9_05lPzYeEYcrSCYzVt2z8Jel7Z_uawluDaC6gt6erM4xcQQeGnc_0EPE2W-1H8wqE4Ye7J_7-54rKX4qokJvCmvGlA2H5iGwUscsRawAOkrgvUmL7LZXlFsk33vwdpGw9LQh3pT2SjIb0Qyzo68G0Ri057bn_K4bIGI8FBxd2aXVQ25mPR3a65_iwwkHRzMU0KkuQ4gb0");'></div>
+<span class="absolute -bottom-2 -right-2 text-3xl">🥉</span>
+</div>
+<div class="flex flex-col items-center justify-center mt-2">
+<p class="text-white text-lg font-bold">sarah_w</p>
+<p class="text-gray-400 text-sm">1,000 XP</p>
+</div>
+</div>
+</div>
+<div class="flex flex-col px-4 pt-4 pb-20 space-y-3">
+<!-- User List Item -->
+<div class="flex items-center bg-background-light/10 p-3 rounded-lg">
+<p class="text-white w-8 text-center font-bold">4</p>
+<img class="w-12 h-12 rounded-full mr-4 object-cover" data-alt="User avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC82ZhCq7OM_2Gr9bdw0XAIpsnH4xeVBOGEwvCUFOG3zCAxS40u383-2ZDzKFlXLL7AqiBF2qLn-cpNLTuanWsQer7VD2K-i9thuj5pHJ2unvg2ZSNjXPn3FLJuEjgARs67zgfXfeshVYBLsoRZtjr0xTWCnm6IjVcjqzBVz_uxdkHG3d-ynMfNBVJgWec10ibgRWAhCxIdWE4i72MLsqIN4swDg4WmCaxuiHa4TizlHLbYn4YtnZESBVWXssaVfVSfIQoPFmBxIds"/>
+<div class="flex-1">
+<p class="text-white font-bold">mike_p</p>
+<div class="flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-lg text-yellow-400">star</span>
+<span class="material-symbols-outlined text-lg text-blue-400">science</span>
+<span class="material-symbols-outlined text-lg text-green-400">biotech</span>
+</div>
+</div>
+<p class="text-primary font-bold">950 XP</p>
+</div>
+<div class="flex items-center bg-background-light/10 p-3 rounded-lg">
+<p class="text-white w-8 text-center font-bold">5</p>
+<img class="w-12 h-12 rounded-full mr-4 object-cover" data-alt="User avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLzAxS-Y-1Lo1l9vvXFEQje_y2AQEgaG0t24ETJvEIFI7BHy-3v6jAl2jnxyKKQhLPcvhIMMPJT5nfVYIQWjvyOW-wuHOMZYL0qfmeRVbvxLMjGudslI3jucApMVtZWveKOj7xqTWW4v6NjceGuqZBKktd9UNpnHTsPz01ytBsDwMsPO3M1zmlimv_DB1SIt1_a4WF5MyE_GIS2kUHDWuwTij2cZNv6LnlfQ4agv5d-a7m0K8COTweB0XNiHWOmJUezqzobFyVORc"/>
+<div class="flex-1">
+<p class="text-white font-bold">alex_chen</p>
+<div class="flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-lg text-red-400">local_fire_department</span>
+<span class="material-symbols-outlined text-lg text-purple-400">calculate</span>
+</div>
+</div>
+<p class="text-primary font-bold">920 XP</p>
+</div>
+<div class="flex items-center bg-background-light/10 p-3 rounded-lg">
+<p class="text-white w-8 text-center font-bold">6</p>
+<img class="w-12 h-12 rounded-full mr-4 object-cover" data-alt="User avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBaUXPCmRsPdUJRUInU2d0xuTLRwO3zeyby19A3Ue5JLXzrYc-93hRs9hVn22T5hjFVZZWVmDTHQ_crJGJ5wNUZE-TKGTWW5iV1IMELfy-BH8qZKcLvz4cvVtsPJKI01NDotwJfj9xSNLk3NkUTHNwLVYSi7rbYsiuBV3zqNdoSpVRquq9GINlvC8eYYnVIFJwCU8mVL2H4-GAwTORvr--OgfPyLa1YDkxM46Jii2dk-M8M_jKBxSBFmJgHOavMr7D6m5tSvNfNUtM"/>
+<div class="flex-1">
+<p class="text-white font-bold">emily_rose</p>
+<div class="flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-lg text-yellow-400">star</span>
+<span class="material-symbols-outlined text-lg text-green-400">biotech</span>
+</div>
+</div>
+<p class="text-primary font-bold">880 XP</p>
+</div>
+</div>
+<div class="fixed bottom-0 left-0 right-0 bg-primary/80 backdrop-blur-sm p-3 shadow-lg">
+<div class="flex items-center">
+<p class="text-white w-8 text-center font-bold">12</p>
+<img class="w-12 h-12 rounded-full mr-4 object-cover" data-alt="Current user avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxNLlCZZPn2RavbpKrTOT4yz1rEuD5mb3fwpsCPZMmfpDAvOUu2uvDh2J33zNv3TxIfYUqjqpQUgOM6lhfABUwSbqpYKHg-mkyhpjAANS7_U1oDkGG_4ESO4PLzNZj4YakkpSnB1Zk86N55W6HMKuthAyDgSVEaAcytXJstOpBp9RHTlDFAoJbZOaDWLTXrXDyv9TGolcP5knm2SJmrCXD2Q9HYuUN7ed4uFw4eT0kRpmFp9jXPyaEs3A4dGQDZKw2EiiYgq5vmxA"/>
+<div class="flex-1">
+<p class="text-white font-bold">You</p>
+<p class="text-white/80 text-sm">Your Rank</p>
+</div>
+<p class="text-white font-bold">500 XP</p>
+</div>
+</div>
+</div>
+</body></html>

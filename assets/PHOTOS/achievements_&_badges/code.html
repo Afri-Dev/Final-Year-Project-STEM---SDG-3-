@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Achievements Screen</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#13a4ec",
+            "background-light": "#f6f7f8",
+            "background-dark": "#101c22",
+          },
+          fontFamily: {
+            "display": ["Space Grotesk", "sans-serif"]
+          },
+          borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<!-- Top App Bar -->
+<div class="flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between sticky top-0 z-10">
+<div class="text-[#111618] dark:text-white flex size-12 shrink-0 items-center justify-center" data-icon="ArrowUp" data-size="24px" data-weight="regular">
+<span class="material-symbols-outlined">
+          arrow_back
+        </span>
+</div>
+<h2 class="text-[#111618] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Your Trophy Case</h2>
+<div class="flex size-12 shrink-0 items-center justify-center"></div>
+</div>
+<!-- Badges Grid -->
+<div class="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-4 p-4">
+<div class="flex flex-col gap-3 text-center pb-3">
+<div class="px-4">
+<div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-full border-4 border-yellow-400" data-alt="Golden badge for Math Master achievement" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCM1iqK7JuZ1GC_nsDGQF7Mjj-BTSUM0XImY9fPSiKlgPQaBN9NAPT6Spz0Ht9Vk_2pz9rgczwVUd2BfKErS0BYGeRYuzXPN2ID4vUBHx8EUXcmUNsgbxfbmo_ras8fI_Bzk2MO7UQb_XDWo6zfzy_-vYXXsiLpjkA8DDWg03sLGamsDeuMnTVq3_g-9K5oPbawTnTHxCFPd0pmBvX3TT-oDB4jYETgKCWKamhV7vq382BKh-YGTFxstuc_ezbL81rI_GgUjjZk_K4");'></div>
+</div>
+<div>
+<p class="text-[#111618] dark:text-white text-base font-medium leading-normal">Math Master</p>
+<p class="text-primary text-sm font-normal leading-normal">Earned</p>
+</div>
+</div>
+<div class="flex flex-col gap-3 text-center pb-3">
+<div class="px-4">
+<div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-full border-4 border-yellow-400" data-alt="Golden badge for Science Star achievement" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD4M586zDZYSE2iQrd6JyTxHyF7ZOLYRLghUj5pi5ir55aXOx2m3fe8HljIh91byx_QVLC8Lm-IZAWNXt0tQ6y_VG9mPwY2hYRb-wwS-Ap-I2nIPe96HMgm3pesoAzID1iXmhvHeAY9yN322Dm-MIt9aYZtamJW31iOxHaMiFG4Dmr1c-Ye4M6i1tEcC2AhmOSK8QhMHXmH7jUgcQKzsptHHJHPUiU7C51GudgLb6TGKdBTgA61lOvoq3sp4cX86Yjk6vrFc-8Sy5s");'></div>
+</div>
+<div>
+<p class="text-[#111618] dark:text-white text-base font-medium leading-normal">Science Star</p>
+<p class="text-primary text-sm font-normal leading-normal">Earned</p>
+</div>
+</div>
+<div class="flex flex-col gap-3 text-center pb-3">
+<div class="px-4">
+<div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-full border-4 border-yellow-400" data-alt="Golden badge for Coding Champion achievement" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCkQJRhNXxI1lp2ZfbFkDl8qGctAqvye-XuYSzQ5X3jllLPYSAu9goHjhgp_4BxQgzIW0GwNkVnGL8R0drkP8yBCOAum6DRZVsvJeJslWdJIFg5zUT6BdicCosd0jlaFYtNm3jzGy4YyyLKUFuw9x96asg92xgQ0jzuVtnb-wVZdYMMXXmEs4ao-cMxQ-mmoTwfABYJUIiLKx8IAqD5tozh696244cq_D9K-kPExAO4dCys62l5nADMVTaBLWZk4yE_bc6jh-i_yt0");'></div>
+</div>
+<div>
+<p class="text-[#111618] dark:text-white text-base font-medium leading-normal">Coding Champion</p>
+<p class="text-primary text-sm font-normal leading-normal">Earned</p>
+</div>
+</div>
+<div class="flex flex-col gap-3 text-center pb-3">
+<div class="px-4">
+<div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-full filter grayscale" data-alt="Locked badge for Biology Buff achievement" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDelSMpJyup0Ag19ZMji38ytRnu9gzih4GlxxN7OdeZmujG7PUtzLo9e0i6kClqiEz1YkhSgnM0As7dK9t3d6OdzwAQhjkuxBC360mL_cymfveZfAAVHUGNvCaQVnfWy_BoT8dbfkIrIvWXXZksz4jzN5Uv_bZvU6CZfi0YiLSEc_Vwqq-rsT-smtjmWUjoiIyppuU1JIV15AGE2dhWTSkGzsm2_HxePw3_YZO9oIWkhMvFLOL-B3dGzZSEoPG_xtoESvOpFT-1hkc");'></div>
+</div>
+<div>
+<p class="text-gray-500 dark:text-gray-400 text-base font-medium leading-normal">Biology Buff</p>
+<p class="text-gray-400 dark:text-gray-500 text-sm font-normal leading-normal">Locked</p>
+</div>
+</div>
+<div class="flex flex-col gap-3 text-center pb-3">
+<div class="px-4">
+<div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-full filter grayscale" data-alt="Locked badge for Physics Phanatic achievement" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB-VsnY_HD_ELv5WrWZWnmwsKnw_QgNjyCqWPVi4kp0uRp61tsvhKTqcFnadpLgz4MstBdtvjbOC_IbqsxbdfMlMWYaQdWCcOs35bVHjdW1OfV2AjweXqvidgWrMzBfaghCLvJcXvfFbTvm6cH13BlnEEfUsZTEDEFn6vvBh6pJXuxXtbVSRZkPJb7uDuk_j0qz5xwalAHmLcoyF_QbtG8OzVjbyJaEO5iVlk0Cs7frdCqnnIMAX5MKL4BsGh1jxKdTHmAVOFjSoDM");'></div>
+</div>
+<div>
+<p class="text-gray-500 dark:text-gray-400 text-base font-medium leading-normal">Physics Phanatic</p>
+<p class="text-gray-400 dark:text-gray-500 text-sm font-normal leading-normal">Locked</p>
+</div>
+</div>
+<div class="flex flex-col gap-3 text-center pb-3">
+<div class="px-4">
+<div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-full filter grayscale flex items-center justify-center bg-gray-200 dark:bg-gray-700">
+<span class="material-symbols-outlined text-4xl text-gray-500 dark:text-gray-400">lock</span>
+</div>
+</div>
+<div>
+<p class="text-gray-500 dark:text-gray-400 text-base font-medium leading-normal">Locked Badge</p>
+<p class="text-gray-400 dark:text-gray-500 text-sm font-normal leading-normal">Locked</p>
+</div>
+</div>
+</div>
+<!-- Unlocked Avatars Section -->
+<h2 class="text-[#111618] dark:text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Unlocked Avatars</h2>
+<div class="grid grid-cols-[repeat(auto-fit,minmax(120px,1fr))] gap-4 p-4">
+<div class="flex flex-col gap-3 text-center">
+<div class="px-2">
+<div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-full" data-alt="Astro avatar with a space helmet" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCLSCCdallAUFw_ETE67yv54LslAEs6J1ZLy5PPchZuEMQrL7E4df1_QbwLDYsTWwu0pgGkaSzanJCK-9tvLPynb2bun8MY46JKnPxAOX2SEf8YRIe1-CpqpHO8iuF1uQ9e-0Nmr365FADJVavvlGNSj6KZJWwfxfHoKxAuyQ18X4mlhOhrrbGnHPuZanR7wcfRdUnqfRe0MYsJhylAKJGxxpO45hCEbssyvAMGLLkBsUxAkZRY6cS6YkpbIbRvqUtXE3WnRbdE7C8");'></div>
+</div>
+</div>
+<div class="flex flex-col gap-3 text-center">
+<div class="px-2">
+<div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-full" data-alt="Robot avatar with glowing eyes" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAJRgUCs3WXJAzhOgyaGGSNE8CAx-ebg1qqiVQhDmknjaKB4cScmpM9E4RmhRN38w_qvpZZqOyk0iwX_RlPzUXU_DQqFaSkXmJWs-ALdlGOxCH13gOkUc9qD7I1Z3PYtXR1C0y-iy4y3CrhpVoFK3f1Wz5SwQvb8wLJIRd5i6UaNsoMMgYCNm3f5eGFeTFAdGhJV-BokPHAoUdsxJeTiowWbWUiExWYCM0AYkBczOHUYpUlAfzRAA0SNv33Soq0T4ZSHFvvZVn-IX0");'></div>
+</div>
+</div>
+<div class="flex flex-col gap-3 text-center">
+<div class="px-2">
+<div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-full" data-alt="Scientist avatar with a lab coat" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBT6kWGoowIg-uROZNGn5p3tK_YUuEnkrgGfBUrjtS24Na-9FcRcQrpeTanUg6Q7yPfmHytdrkjzvoqo6RNBOnjScZqzQYwzT5I4KHMeXFrQ92kTgCl_I4PzZf73DUt0VOKN8D283dXOJMzEsRILDY4nxZsZVjquhcS9mBSwW6K1Tq3adVIIMaxNotuxYMDoCyVjmRrBS-kR541ufNdC8P05Qx4DShIapqEWvdL-KJsFYGhma7f4T3C5LhkSEHMpjJgaDT_iypdDlA");'></div>
+</div>
+</div>
+</div>
+<div class="flex-grow"></div> <!-- Spacer to push nav to bottom -->
+<!-- Bottom Nav Bar -->
+<div class="flex gap-2 border-t border-gray-200 dark:border-gray-800 bg-background-light dark:bg-background-dark px-4 pb-3 pt-2 sticky bottom-0">
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-gray-500 dark:text-gray-400" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">home</span>
+</div>
+<p class="text-xs font-medium leading-normal tracking-[0.015em]">Home</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-gray-500 dark:text-gray-400" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">book</span>
+</div>
+<p class="text-xs font-medium leading-normal tracking-[0.015em]">Learn</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 rounded-full text-primary" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">emoji_events</span>
+</div>
+<p class="text-xs font-medium leading-normal tracking-[0.015em]">Achievements</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-gray-500 dark:text-gray-400" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">person</span>
+</div>
+<p class="text-xs font-medium leading-normal tracking-[0.015em]">Profile</p>
+</a>
+</div>
+</div>
+</body></html>

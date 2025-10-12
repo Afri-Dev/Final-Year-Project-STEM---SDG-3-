@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>STEM Splash Screen</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#13a4ec",
+            "background-light": "#f6f7f8",
+            "background-dark": "#101c22",
+          },
+          fontFamily: {
+            "display": ["Space Grotesk"]
+          },
+          borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body>
+<div class="relative flex h-screen min-h-screen w-full flex-col bg-background-light dark:bg-background-dark group/design-root overflow-x-hidden font-display">
+<div class="flex flex-col items-center justify-center flex-grow p-4">
+<div class="flex flex-col items-center justify-center space-y-8 animate-fade-in-up">
+<div class="w-48 h-48 bg-primary/20 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-9xl">
+              science
+            </span>
+</div>
+<h1 class="text-[#111618] dark:text-white tracking-light text-[32px] font-bold leading-tight px-4 text-center">STEM for Everyone, Everywhere</h1>
+</div>
+</div>
+<div class="absolute bottom-10 left-0 right-0 p-4">
+<div class="flex flex-col gap-3">
+<div class="flex gap-6 justify-between">
+<p class="text-[#111618] dark:text-white text-base font-medium leading-normal">Loading...</p>
+<p class="text-[#111618] dark:text-white text-sm font-normal leading-normal">100%</p>
+</div>
+<div class="rounded bg-primary/30 dark:bg-primary/20">
+<div class="h-2 rounded bg-primary" style="width: 100%;"></div>
+</div>
+</div>
+</div>
+</div>
+</body></html>

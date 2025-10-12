@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>User Profile</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#13a4ec",
+            "background-light": "#f6f7f8",
+            "background-dark": "#101c22",
+          },
+          fontFamily: {
+            "display": ["Space Grotesk", "sans-serif"]
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings:
+      'FILL' 0,
+      'wght' 400,
+      'GRAD' 0,
+      'opsz' 24
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden font-display">
+<div class="flex items-center p-4 pb-2 justify-between bg-background-light dark:bg-background-dark">
+<div class="flex size-12 shrink-0 items-center">
+<span class="material-symbols-outlined text-[#111618] dark:text-white" style="font-size: 24px;">arrow_back</span>
+</div>
+<h2 class="text-[#111618] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Profile</h2>
+<div class="flex w-12 items-center justify-end">
+<button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 bg-transparent text-[#111618] dark:text-white gap-2 text-base font-bold leading-normal tracking-[0.015em] min-w-0 p-0">
+<span class="material-symbols-outlined" style="font-size: 24px;">settings</span>
+</button>
+</div>
+</div>
+<div class="flex p-4 @container">
+<div class="flex w-full flex-col gap-4 items-center">
+<div class="flex gap-4 flex-col items-center">
+<div class="relative">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full min-h-32 w-32" data-alt="A stylized, colorful abstract image representing a user's avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB_1jTs4ic6RI63KOzuf2Lj-v5g7vtNDRJWeABttdQxeLRFHJzIQzmpqbAy9g8e3Q-tJMWCtVf8b1fnqICgn-ZstLUBS6_soYjAxXR_9GnHBjqaY3wBTOHA-6HafIGPeldBSJ3Gs1xJ6l-x4wPRMt6RLkPIPuxYtdopKrfD3Rsl0bY-oPIwFHfy_FCv2uT8IwF1Olg5FC8mDtQsS10QS5DLMt444dBlydJMtd7VWapPNLoOPKZdEQxufX0XqcIaZpQpNif-t1f1-JY");'></div>
+<button class="absolute bottom-0 right-0 flex items-center justify-center w-8 h-8 rounded-full bg-primary text-white">
+<span class="material-symbols-outlined" style="font-size: 20px;">edit</span>
+</button>
+</div>
+<div class="flex flex-col items-center justify-center">
+<p class="text-[#111618] dark:text-white text-[22px] font-bold leading-tight tracking-[-0.015em] text-center">Alex Smith</p>
+<p class="text-[#617c89] dark:text-gray-400 text-base font-normal leading-normal text-center">Level 12 - Science Whiz</p>
+</div>
+</div>
+<div class="flex w-full max-w-[480px] gap-3 @[480px]:w-auto">
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary/20 text-primary text-sm font-bold leading-normal tracking-[0.015em] flex-1 @[480px]:flex-auto">
+<span class="truncate">Edit Avatar</span>
+</button>
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] flex-1 @[480px]:flex-auto">
+<span class="truncate">Change Theme</span>
+</button>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-3 p-4">
+<div class="flex gap-6 justify-between">
+<p class="text-[#111618] dark:text-white text-base font-medium leading-normal">Next Level</p>
+<p class="text-[#617c89] dark:text-gray-400 text-sm font-normal leading-normal">1250/2000 XP</p>
+</div>
+<div class="rounded-full bg-background-light dark:bg-gray-700 h-2.5"><div class="h-2.5 rounded-full bg-primary" style="width: 62%;"></div></div>
+</div>
+<div class="flex flex-wrap gap-4 p-4">
+<div class="flex min-w-[158px] flex-1 flex-col gap-2 rounded-xl p-4 bg-white dark:bg-background-dark border border-gray-200 dark:border-gray-700">
+<p class="text-[#617c89] dark:text-gray-400 text-sm font-medium leading-normal">XP Points</p>
+<p class="text-[#111618] dark:text-white tracking-light text-2xl font-bold leading-tight">1250</p>
+</div>
+<div class="flex min-w-[158px] flex-1 flex-col gap-2 rounded-xl p-4 bg-white dark:bg-background-dark border border-gray-200 dark:border-gray-700">
+<p class="text-[#617c89] dark:text-gray-400 text-sm font-medium leading-normal">Badges Earned</p>
+<p class="text-[#111618] dark:text-white tracking-light text-2xl font-bold leading-tight">15</p>
+</div>
+<div class="flex min-w-[158px] flex-1 flex-col gap-2 rounded-xl p-4 bg-white dark:bg-background-dark border border-gray-200 dark:border-gray-700">
+<p class="text-[#617c89] dark:text-gray-400 text-sm font-medium leading-normal">Longest Streak</p>
+<p class="text-[#111618] dark:text-white tracking-light text-2xl font-bold leading-tight">7 Days</p>
+</div>
+</div>
+<h2 class="text-[#111618] dark:text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Badges</h2>
+<div class="px-4">
+<div class="grid grid-cols-3 gap-4">
+<div class="flex flex-col items-center gap-2">
+<div class="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" style="font-size: 40px;">science</span>
+</div>
+<p class="text-[#111618] dark:text-white text-sm font-medium text-center">Biology Basics</p>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" style="font-size: 40px;">bolt</span>
+</div>
+<p class="text-[#111618] dark:text-white text-sm font-medium text-center">Physics Pro</p>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" style="font-size: 40px;">biotech</span>
+</div>
+<p class="text-[#111618] dark:text-white text-sm font-medium text-center">Chemistry Champion</p>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-20 h-20 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-gray-400 dark:text-gray-500" style="font-size: 40px;">public</span>
+</div>
+<p class="text-gray-400 dark:text-gray-500 text-sm font-medium text-center">Earth Explorer</p>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-20 h-20 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-gray-400 dark:text-gray-500" style="font-size: 40px;">calculate</span>
+</div>
+<p class="text-gray-400 dark:text-gray-500 text-sm font-medium text-center">Math Master</p>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-20 h-20 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-gray-400 dark:text-gray-500" style="font-size: 40px;">rocket_launch</span>
+</div>
+<p class="text-gray-400 dark:text-gray-500 text-sm font-medium text-center">Space Cadet</p>
+</div>
+</div>
+</div>
+<h2 class="text-[#111618] dark:text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-8">Streak</h2>
+<div class="px-4 pb-8">
+<div class="grid grid-cols-7 gap-2">
+<div class="flex flex-col items-center gap-1">
+<p class="text-xs text-[#617c89] dark:text-gray-400">Mon</p>
+<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-white">check</span>
+</div>
+</div>
+<div class="flex flex-col items-center gap-1">
+<p class="text-xs text-[#617c89] dark:text-gray-400">Tue</p>
+<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-white">check</span>
+</div>
+</div>
+<div class="flex flex-col items-center gap-1">
+<p class="text-xs text-[#617c89] dark:text-gray-400">Wed</p>
+<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-white">check</span>
+</div>
+</div>
+<div class="flex flex-col items-center gap-1">
+<p class="text-xs text-[#617c89] dark:text-gray-400">Thu</p>
+<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-white">check</span>
+</div>
+</div>
+<div class="flex flex-col items-center gap-1">
+<p class="text-xs text-[#617c89] dark:text-gray-400">Fri</p>
+<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-white">check</span>
+</div>
+</div>
+<div class="flex flex-col items-center gap-1">
+<p class="text-xs text-[#617c89] dark:text-gray-400">Sat</p>
+<div class="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+</div>
+<div class="flex flex-col items-center gap-1">
+<p class="text-xs text-[#617c89] dark:text-gray-400">Sun</p>
+<div class="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+</div>
+</div>
+</div>
+</div>
+</body></html>

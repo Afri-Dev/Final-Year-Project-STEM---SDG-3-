@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Quiz Menu</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#00529B",
+            "accent": "#FFD700",
+            "background-light": "#F5F5F5",
+            "background-dark": "#101c22",
+            "text-light": "#111618",
+            "text-dark": "#f0f3f4",
+            "card-light": "#FFFFFF",
+            "card-dark": "#1a2a33"
+          },
+          fontFamily: {
+            "display": ["Space Grotesk", "sans-serif"]
+          },
+          borderRadius: {"DEFAULT": "0.5rem", "lg": "0.75rem", "xl": "1rem", "full": "9999px"},
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden text-text-light dark:text-text-dark">
+<!-- Top App Bar -->
+<div class="flex items-center p-4 pb-2 justify-between bg-background-light dark:bg-background-dark sticky top-0 z-10">
+<div class="flex size-12 shrink-0 items-center">
+<span class="material-symbols-outlined text-3xl">arrow_back</span>
+</div>
+<h2 class="text-xl font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Choose Your Quiz</h2>
+<div class="flex w-12 items-center justify-end">
+<button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-12 bg-transparent gap-2 text-base font-bold leading-normal tracking-[0.015em] min-w-0 p-0">
+<span class="material-symbols-outlined text-3xl">settings</span>
+</button>
+</div>
+</div>
+<!-- Progress Indicator -->
+<div class="px-4 pt-2 pb-4">
+<div class="flex justify-between items-center mb-1">
+<p class="text-sm font-medium">Overall Progress</p>
+<p class="text-sm font-bold text-primary">75%</p>
+</div>
+<div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2.5">
+<div class="bg-primary h-2.5 rounded-full" style="width: 75%"></div>
+</div>
+</div>
+<!-- Main Content -->
+<div class="flex-grow p-4 space-y-6">
+<!-- Adaptive Quiz Card -->
+<div class="flex flex-col items-stretch justify-start rounded-xl shadow-lg bg-card-light dark:bg-card-dark border-2 border-accent">
+<div class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-t-xl" data-alt="Abstract representation of adaptive learning pathways" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCWP67PyVZ-ko1jpjsBTao7vmLz0dhGb3ssf6Rt0k2k64rImohjMy8s7zW7GfwdoQoqje1uANZVaPi1hmkCOmeeVp6dlCKAqSvLAJSR230nKYKmdxxbFuG2hHLwP9j0DX5SagjolF0l6soKjpxL18BD6-T1bf0Js6kvXxpJgI1nLlcMqa04zHB5PJ3l04XhW6zGQytb4JR9du17QGd6qWpdTgK8dVa5-E05S5ZYpatpKvffUckQ_1SR1w6jaqscHFOWnXmE4GDRDAA");'></div>
+<div class="flex w-full min-w-72 grow flex-col items-stretch justify-center gap-2 p-4">
+<div class="flex justify-between items-start">
+<div>
+<p class="text-sm font-normal text-slate-500 dark:text-slate-400">Recommended</p>
+<p class="text-xl font-bold leading-tight tracking-[-0.015em]">Adaptive Quiz</p>
+</div>
+<button class="flex items-center gap-1 text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined text-lg">info</span>
+</button>
+</div>
+<p class="text-base font-normal text-slate-600 dark:text-slate-300">Personalized questions that adapt to you.</p>
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-6 bg-accent text-primary text-base font-bold leading-normal mt-2 self-start">
+<span class="truncate">Start Quiz</span>
+</button>
+</div>
+</div>
+<!-- Other Quiz Modes -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Practice Mode -->
+<div class="flex items-stretch justify-between gap-4 rounded-xl bg-card-light dark:bg-card-dark p-4 shadow-md">
+<div class="flex flex-col gap-4 flex-grow">
+<div class="flex flex-col gap-1">
+<p class="text-lg font-bold leading-tight">Practice Mode</p>
+<p class="text-sm font-normal text-slate-500 dark:text-slate-400">Learn at your own pace.</p>
+</div>
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary/20 dark:bg-primary/30 text-primary text-sm font-medium w-fit mt-auto">
+<span class="truncate">Start Quiz</span>
+</button>
+</div>
+<div class="flex items-center justify-center w-24 h-24 bg-primary/10 dark:bg-primary/20 rounded-lg shrink-0">
+<span class="material-symbols-outlined text-5xl text-primary">edit</span>
+</div>
+</div>
+<!-- Timed Challenge -->
+<div class="flex items-stretch justify-between gap-4 rounded-xl bg-card-light dark:bg-card-dark p-4 shadow-md">
+<div class="flex flex-col gap-4 flex-grow">
+<div class="flex flex-col gap-1">
+<p class="text-lg font-bold leading-tight">Timed Challenge</p>
+<p class="text-sm font-normal text-slate-500 dark:text-slate-400">Test your speed and accuracy.</p>
+</div>
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary/20 dark:bg-primary/30 text-primary text-sm font-medium w-fit mt-auto">
+<span class="truncate">Start Quiz</span>
+</button>
+</div>
+<div class="flex items-center justify-center w-24 h-24 bg-primary/10 dark:bg-primary/20 rounded-lg shrink-0">
+<span class="material-symbols-outlined text-5xl text-primary">timer</span>
+</div>
+</div>
+<!-- Weekly Challenge -->
+<div class="flex items-stretch justify-between gap-4 rounded-xl bg-card-light dark:bg-card-dark p-4 shadow-md md:col-span-2">
+<div class="flex flex-col gap-4 flex-grow">
+<div class="flex flex-col gap-1">
+<p class="text-lg font-bold leading-tight">Weekly Challenge</p>
+<p class="text-sm font-normal text-slate-500 dark:text-slate-400">Compete on the weekly leaderboard.</p>
+</div>
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary/20 dark:bg-primary/30 text-primary text-sm font-medium w-fit mt-auto">
+<span class="truncate">Start Quiz</span>
+</button>
+</div>
+<div class="flex items-center justify-center w-24 h-24 bg-primary/10 dark:bg-primary/20 rounded-lg shrink-0">
+<span class="material-symbols-outlined text-5xl text-primary">emoji_events</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body></html>

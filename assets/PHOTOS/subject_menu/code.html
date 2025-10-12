@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>STEM Education App Menu</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#13a4ec",
+            "background-light": "#f6f7f8",
+            "background-dark": "#101c22",
+          },
+          fontFamily: {
+            "display": ["Space Grotesk", "sans-serif"]
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="flex flex-col flex-1">
+<div class="flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between">
+<div class="flex items-center gap-4">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12" data-alt="User's profile picture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBhxNB3I6YMYbf9VVt-ZWX_I8mYHOtMepsvnwOFMkHypk1-6PYnmOiZpUCBG5qHBa_zQTANtNOgIhF-Rq83yptF3f6ql-I_dpfhjkaXQQVypS6rk1gcT-1xwT_fE_W2hmN8xG-TzUeYFs7lyX8EDwIeS_On9KFUawO0y_bweMapdv8RaefmjpBT4Q0hmP4QG3xVsD1Mnv7O3qDy9q_uqtZCMbvpQ7riGZahr30iirjqt3JGF7IIXO5_B3CkVEMhFA_KGBYUhjVoVRM");'></div>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1">Let's learn something new today!</h2>
+</div>
+</div>
+<div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Science Card -->
+<div class="flex items-center gap-4 bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm">
+<div class="text-white flex items-center justify-center rounded-lg bg-blue-500 shrink-0 size-12">
+<span class="material-symbols-outlined">science</span>
+</div>
+<div class="flex flex-col justify-center flex-1">
+<p class="text-slate-900 dark:text-white text-base font-medium leading-normal line-clamp-1">Science</p>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-normal leading-normal line-clamp-2">75% Complete</p>
+</div>
+<div class="relative size-16">
+<svg class="size-full" height="36" viewbox="0 0 36 36" width="36" xmlns="http://www.w3.org/2000/svg">
+<circle class="stroke-slate-200 dark:stroke-slate-700" cx="18" cy="18" fill="none" r="16" stroke-width="3"></circle>
+<circle class="stroke-orange-500" cx="18" cy="18" fill="none" r="16" stroke-dasharray="100" stroke-dashoffset="25" stroke-linecap="round" stroke-width="3" transform="rotate(-90 18 18)"></circle>
+</svg>
+<span class="absolute inset-0 flex items-center justify-center text-slate-900 dark:text-white text-sm font-bold">75%</span>
+</div>
+</div>
+<!-- Technology Card -->
+<div class="flex items-center gap-4 bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm">
+<div class="text-white flex items-center justify-center rounded-lg bg-green-500 shrink-0 size-12">
+<span class="material-symbols-outlined">devices</span>
+</div>
+<div class="flex flex-col justify-center flex-1">
+<p class="text-slate-900 dark:text-white text-base font-medium leading-normal line-clamp-1">Technology</p>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-normal leading-normal line-clamp-2">50% Complete</p>
+</div>
+<div class="relative size-16">
+<svg class="size-full" height="36" viewbox="0 0 36 36" width="36" xmlns="http://www.w3.org/2000/svg">
+<circle class="stroke-slate-200 dark:stroke-slate-700" cx="18" cy="18" fill="none" r="16" stroke-width="3"></circle>
+<circle class="stroke-yellow-500" cx="18" cy="18" fill="none" r="16" stroke-dasharray="100" stroke-dashoffset="50" stroke-linecap="round" stroke-width="3" transform="rotate(-90 18 18)"></circle>
+</svg>
+<span class="absolute inset-0 flex items-center justify-center text-slate-900 dark:text-white text-sm font-bold">50%</span>
+</div>
+</div>
+<!-- Engineering Card -->
+<div class="flex items-center gap-4 bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm">
+<div class="text-white flex items-center justify-center rounded-lg bg-purple-500 shrink-0 size-12">
+<span class="material-symbols-outlined">engineering</span>
+</div>
+<div class="flex flex-col justify-center flex-1">
+<p class="text-slate-900 dark:text-white text-base font-medium leading-normal line-clamp-1">Engineering</p>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-normal leading-normal line-clamp-2">25% Complete</p>
+</div>
+<div class="relative size-16">
+<svg class="size-full" height="36" viewbox="0 0 36 36" width="36" xmlns="http://www.w3.org/2000/svg">
+<circle class="stroke-slate-200 dark:stroke-slate-700" cx="18" cy="18" fill="none" r="16" stroke-width="3"></circle>
+<circle class="stroke-orange-500" cx="18" cy="18" fill="none" r="16" stroke-dasharray="100" stroke-dashoffset="75" stroke-linecap="round" stroke-width="3" transform="rotate(-90 18 18)"></circle>
+</svg>
+<span class="absolute inset-0 flex items-center justify-center text-slate-900 dark:text-white text-sm font-bold">25%</span>
+</div>
+</div>
+<!-- Mathematics Card -->
+<div class="flex items-center gap-4 bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm">
+<div class="text-white flex items-center justify-center rounded-lg bg-red-500 shrink-0 size-12">
+<span class="material-symbols-outlined">calculate</span>
+</div>
+<div class="flex flex-col justify-center flex-1">
+<p class="text-slate-900 dark:text-white text-base font-medium leading-normal line-clamp-1">Mathematics</p>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-normal leading-normal line-clamp-2">90% Complete</p>
+</div>
+<div class="relative size-16">
+<svg class="size-full" height="36" viewbox="0 0 36 36" width="36" xmlns="http://www.w3.org/2000/svg">
+<circle class="stroke-slate-200 dark:stroke-slate-700" cx="18" cy="18" fill="none" r="16" stroke-width="3"></circle>
+<circle class="stroke-yellow-500" cx="18" cy="18" fill="none" r="16" stroke-dasharray="100" stroke-dashoffset="10" stroke-linecap="round" stroke-width="3" transform="rotate(-90 18 18)"></circle>
+</svg>
+<span class="absolute inset-0 flex items-center justify-center text-slate-900 dark:text-white text-sm font-bold">90%</span>
+</div>
+</div>
+</div>
+</div>
+<div class="sticky bottom-0 w-full bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 shadow-t-lg">
+<div class="flex justify-around py-2">
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-xs font-medium">Dashboard</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined">search</span>
+<span class="text-xs font-medium">Search</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-xs font-medium">Settings</span>
+</button>
+</div>
+</div>
+</div>
+</body></html>

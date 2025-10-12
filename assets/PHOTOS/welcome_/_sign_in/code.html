@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>STEMtastic - Welcome</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&amp;display=swap" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#00A99D",
+            "background-light": "#f6f7f8",
+            "background-dark": "#003366",
+            "accent": "#FFD700"
+          },
+          fontFamily: {
+            "display": ["Space Grotesk", "sans-serif"]
+          },
+          borderRadius: {
+            "DEFAULT": "0.5rem",
+            "lg": "0.75rem",
+            "xl": "1rem",
+            "full": "9999px"
+          },
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings:
+        'FILL' 0,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 24
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-800 dark:text-slate-200">
+<div class="relative flex h-auto min-h-screen w-full flex-col items-center justify-center bg-background-light dark:bg-background-dark group/design-root overflow-x-hidden p-4">
+<div class="w-full max-w-md mx-auto">
+<div class="flex flex-col items-center justify-center mb-8">
+<div class="w-20 h-20 bg-primary rounded-full flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-white text-4xl">science</span>
+</div>
+<h1 class="text-[#111618] dark:text-white tracking-light text-[32px] font-bold leading-tight text-center">Welcome to STEMtastic!</h1>
+<p class="text-[#111618] dark:text-slate-300 text-base font-normal leading-normal text-center mt-2">Your adventure in STEM starts here.</p>
+</div>
+<div class="bg-white dark:bg-slate-800/50 p-6 rounded-xl shadow-lg">
+<div class="flex border-b border-slate-200 dark:border-slate-700">
+<button class="flex-1 py-3 text-center font-medium text-primary border-b-2 border-primary" id="login-tab">Returning Learner?</button>
+<button class="flex-1 py-3 text-center font-medium text-slate-500 dark:text-slate-400" id="register-tab">New to the Adventure?</button>
+</div>
+<div class="mt-6" id="login-form">
+<form class="space-y-4">
+<label class="flex flex-col">
+<p class="text-[#111618] dark:text-slate-200 text-base font-medium leading-normal pb-2">Username/Email</p>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111618] dark:text-slate-200 focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-200 dark:border-slate-700 bg-[#f0f3f4] dark:bg-slate-900 h-14 placeholder:text-[#617c89] dark:placeholder:text-slate-500 p-4 text-base font-normal leading-normal" placeholder="Enter your username or email" value=""/>
+</label>
+<div class="relative">
+<label class="flex flex-col">
+<p class="text-[#111618] dark:text-slate-200 text-base font-medium leading-normal pb-2">Password</p>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111618] dark:text-slate-200 focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-200 dark:border-slate-700 bg-[#f0f3f4] dark:bg-slate-900 h-14 placeholder:text-[#617c89] dark:placeholder:text-slate-500 p-4 text-base font-normal leading-normal" placeholder="Enter your password" type="password" value=""/>
+</label>
+<button class="absolute right-4 top-12 text-[#617c89] dark:text-slate-500" type="button">
+<span class="material-symbols-outlined">visibility_off</span>
+</button>
+</div>
+<a class="text-sm text-primary hover:underline text-right block" href="#">Forgot Password?</a>
+<button class="w-full bg-primary text-white font-bold py-4 rounded-lg hover:bg-primary/90 transition-colors duration-300" type="submit">Sign In</button>
+</form>
+</div>
+<div class="hidden mt-6" id="register-form">
+<form class="space-y-4">
+<label class="flex flex-col">
+<p class="text-[#111618] dark:text-slate-200 text-base font-medium leading-normal pb-2">Name</p>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111618] dark:text-slate-200 focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-200 dark:border-slate-700 bg-[#f0f3f4] dark:bg-slate-900 h-14 placeholder:text-[#617c89] dark:placeholder:text-slate-500 p-4 text-base font-normal leading-normal" placeholder="Enter your name" value=""/>
+</label>
+<div class="grid grid-cols-2 gap-4">
+<label class="flex flex-col">
+<p class="text-[#111618] dark:text-slate-200 text-base font-medium leading-normal pb-2">Age</p>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111618] dark:text-slate-200 focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-200 dark:border-slate-700 bg-[#f0f3f4] dark:bg-slate-900 h-14 placeholder:text-[#617c89] dark:placeholder:text-slate-500 p-4 text-base font-normal leading-normal" placeholder="Enter your age" type="number" value=""/>
+</label>
+<label class="flex flex-col">
+<p class="text-[#111618] dark:text-slate-200 text-base font-medium leading-normal pb-2">Gender</p>
+<select class="form-select flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111618] dark:text-slate-200 focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-200 dark:border-slate-700 bg-[#f0f3f4] dark:bg-slate-900 h-14 placeholder:text-[#617c89] dark:placeholder:text-slate-500 p-4 text-base font-normal leading-normal">
+<option value="">Select</option>
+<option value="male">Male</option>
+<option value="female">Female</option>
+<option value="other">Other</option>
+<option value="na">Prefer not to say</option>
+</select>
+</label>
+</div>
+<label class="flex flex-col">
+<p class="text-[#111618] dark:text-slate-200 text-base font-medium leading-normal pb-2">Grade Level</p>
+<select class="form-select flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111618] dark:text-slate-200 focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-200 dark:border-slate-700 bg-[#f0f3f4] dark:bg-slate-900 h-14 placeholder:text-[#617c89] dark:placeholder:text-slate-500 p-4 text-base font-normal leading-normal">
+<option value="">Select grade</option>
+<option value="k">Kindergarten</option>
+<option value="1">1st Grade</option>
+<option value="2">2nd Grade</option>
+<option value="3">3rd Grade</option>
+<option value="4">4th Grade</option>
+<option value="5">5th Grade</option>
+<option value="6">6th Grade</option>
+<option value="7">7th Grade</option>
+<option value="8">8th Grade</option>
+<option value="9">9th Grade</option>
+<option value="10">10th Grade</option>
+<option value="11">11th Grade</option>
+<option value="12">12th Grade</option>
+<option value="adult">Not Applicable / Adult</option>
+</select>
+</label>
+<button class="w-full bg-primary text-white font-bold py-4 rounded-lg hover:bg-primary/90 transition-colors duration-300" type="submit">Register</button>
+</form>
+</div>
+</div>
+<div class="text-center mt-6">
+<p class="text-sm text-slate-500 dark:text-slate-400">Or, explore as a guest</p>
+<a class="font-medium text-primary hover:underline" href="#">Skip for Now</a>
+</div>
+</div>
+</div>
+<script>
+    const loginTab = document.getElementById('login-tab');
+    const registerTab = document.getElementById('register-tab');
+    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
+
+    loginTab.addEventListener('click', () => {
+      loginTab.classList.add('text-primary', 'border-primary');
+      loginTab.classList.remove('text-slate-500', 'dark:text-slate-400');
+      registerTab.classList.remove('text-primary', 'border-primary');
+      registerTab.classList.add('text-slate-500', 'dark:text-slate-400');
+      loginForm.classList.remove('hidden');
+      registerForm.classList.add('hidden');
+    });
+
+    registerTab.addEventListener('click', () => {
+      registerTab.classList.add('text-primary', 'border-primary');
+      registerTab.classList.remove('text-slate-500', 'dark:text-slate-400');
+      loginTab.classList.remove('text-primary', 'border-primary');
+      loginTab.classList.add('text-slate-500', 'dark:text-slate-400');
+      registerForm.classList.remove('hidden');
+      loginForm.classList.add('hidden');
+    });
+  </script>
+</body></html>

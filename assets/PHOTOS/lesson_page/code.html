@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>STEM Education App</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#00529B",
+                        "accent": "#6DD400",
+                        "background-light": "#F0F2F5",
+                        "background-dark": "#101c22",
+                        "text-light": "#333333",
+                        "text-dark": "#E0E0E0",
+                    },
+                    fontFamily: {
+                        "display": ["Poppins", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "0.75rem",
+                        "xl": "1rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-text-light dark:text-text-dark">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<!-- Header -->
+<div class="flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between sticky top-0 z-10 shadow-sm">
+<div class="text-text-light dark:text-text-dark flex size-12 shrink-0 items-center justify-center cursor-pointer">
+<span class="material-symbols-outlined">arrow_back</span>
+</div>
+<h1 class="text-text-light dark:text-text-dark text-xl font-bold leading-tight tracking-tight flex-1 text-center">The Magic of Photosynthesis</h1>
+<div class="size-12 shrink-0"></div>
+</div>
+<div class="flex flex-col space-y-6 p-4">
+<!-- Hero Image -->
+<div class="w-full bg-center bg-no-repeat bg-cover flex flex-col justify-end overflow-hidden rounded-xl min-h-[280px]" data-alt="Vibrant green leaves with sunlight filtering through them." style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBIoUiPj8zFYqYm885F9efDGDt8ZmENaMqoQXLPi3Jvb3DaJFhErmNNFHgeWFa9Ze74LjUg8vFaQt7rwD8MKRk4867aqDoTgbO3K6e3raBXExxd5coJlP_lRQXlagFlaYSCdKCRHLlAu9RJUtWBePAlt2mB6XOMSPGpwAMWTE9iNa4eUGQufJN9ObPcVwE29FnvLomnboEi_0n-eH6LidYOaUN3oFTSSYPEdpoN62Y879EzKEURNnLHxkRRLW32k1xe8Q1Et5kI59E");'>
+</div>
+<!-- Topic Description Card -->
+<div class="flex flex-col items-stretch justify-start rounded-xl bg-white dark:bg-slate-800 shadow-md p-6">
+<h2 class="text-primary dark:text-white text-2xl font-bold leading-tight tracking-tight mb-2">What is Photosynthesis?</h2>
+<p class="text-text-light dark:text-text-dark text-base font-normal leading-relaxed">
+                    Photosynthesis is the amazing process plants use to convert light energy into chemical energy. Think of it as a plant's way of making its own food! This process is vital for life on Earth, creating the oxygen we breathe.
+                </p>
+</div>
+<!-- Infographic Card -->
+<div class="flex flex-col items-stretch justify-start rounded-xl bg-white dark:bg-slate-800 shadow-md p-4">
+<div class="w-full bg-center bg-no-repeat aspect-square bg-contain rounded-lg" data-alt="An infographic showing the process of photosynthesis with labels for sunlight, carbon dioxide, water, oxygen, and glucose." style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDzS0B6hfqgEnczPuxVACVeY7M0CqWQWnu8GxxHKkLUyRdVdWclC0djRMmGwW39PV2W5gCAyUwNRmhr2r2zIiW6ZM7kLhFvBktAK-xtSK2Iy1fVituhvS2u3txlWp0fyHVqkH3zPgmOzfcKXK6X4jbP818DQlAJKtnwd-0N7UYEHDCjNOnfMtC8HreHffQFz6imC8QcQvaNJfvq_y-_XemY4bKt2BDSxdLFee4TlVKtVqW7NJv9QphgobhofbNSKYO0AbZYaBMKcdE");'></div>
+<div class="flex w-full min-w-72 grow flex-col items-stretch justify-center gap-1 py-4">
+<p class="text-text-light dark:text-white text-lg font-semibold leading-tight tracking-tight">The Chemical Equation</p>
+<p class="text-gray-500 dark:text-gray-400 text-base font-normal leading-normal">
+                        This infographic breaks down the inputs and outputs of the photosynthesis reaction. Tap to zoom in and explore the details.
+                    </p>
+</div>
+</div>
+<!-- Short Animation Player -->
+<div class="p-0">
+<div class="relative flex items-center justify-center bg-slate-200 dark:bg-slate-700 bg-cover bg-center aspect-video rounded-xl p-4" data-alt="A short animation of a plant absorbing sunlight." style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAh9uvOqnYlzXmkNbuEFqjI3jSwHMk9iJGMYt5WNW58APOQreb_dSucenFvTJVmN3ewaa3E0sF2Nlbtuf954_7xyo68Xs9792uSZigA1RZPEd-T6geodeVIfATz9d9PqhQVThyss5Mo2kzbVlOYEiRYr4xmLjd8Q3rEzUe993GKyw9fxyJ9GjT_3NY1uyBvlZBbHBuyzf3YwH_2Vs3POoYtRBjCAsDo8yZsLozL03u8LiCYWFc2pt2ZdduFLpDIffwfsrVdeI0fWr4");'>
+<button class="flex shrink-0 items-center justify-center rounded-full size-20 bg-black/50 text-white hover:bg-black/70 transition-colors">
+<span class="material-symbols-outlined text-4xl">play_arrow</span>
+</button>
+<div class="absolute inset-x-0 bottom-0 px-4 py-3">
+<div class="flex h-4 items-center justify-center">
+<div class="h-1.5 flex-1 rounded-full bg-white"></div>
+<div class="relative"><div class="absolute -left-2 -top-2 size-4 rounded-full bg-white shadow-md"></div></div>
+<div class="h-1.5 flex-1 rounded-full bg-white/40"></div>
+</div>
+<div class="flex items-center justify-between mt-1">
+<p class="text-white text-xs font-medium leading-normal">0:12</p>
+<p class="text-white text-xs font-medium leading-normal">0:45</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Spacer for FAB -->
+<div class="h-24"></div>
+<!-- Floating Action Button -->
+<div class="fixed bottom-0 left-0 right-0 flex justify-center overflow-hidden p-6 z-20">
+<button class="flex w-full max-w-sm cursor-pointer items-center justify-center overflow-hidden rounded-full h-16 px-6 bg-accent text-white text-lg font-bold leading-normal tracking-wide shadow-lg hover:bg-green-500 transition-colors gap-3">
+<span class="material-symbols-outlined">science</span>
+<span class="truncate">Try It!</span>
+</button>
+</div>
+</div>
+</body></html>
