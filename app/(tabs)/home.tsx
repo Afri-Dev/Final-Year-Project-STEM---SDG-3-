@@ -168,8 +168,10 @@ export default function HomeScreen() {
           </View>
         </View>
 
+
         {/* Quick Actions */}
-        <View style={styles.quickActionsContainer}>
+        
+        {/* <View style={styles.quickActionsContainer}>
           {quickActions.map((action) => (
             <TouchableOpacity
               key={action.id}
@@ -185,7 +187,7 @@ export default function HomeScreen() {
               </Text>
             </TouchableOpacity>
           ))}
-        </View>
+        </View> */}
 
         {/* AI Suggestion Card */}
         <View style={[styles.suggestionCard, { backgroundColor: colors.surface }, Shadows.lg]}>
