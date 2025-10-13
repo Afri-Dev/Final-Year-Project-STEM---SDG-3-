@@ -110,8 +110,21 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       const user = await database.createUser(userData, password);
 
       set({ user, isAuthenticated: true });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Registration failed:", error);
+      
+      // Parse and throw more specific error messages
+      const errorMessage = error?.message || String(error);
+      
+      if (errorMessage.includes("UNIQUE constraint")) {
+        if (errorMessage.includes("users.email")) {
+          throw new Error("Email already exists. This email is already registered.");
+        } else if (errorMessage.includes("users.username")) {
+          throw new Error("Email already exists. An account with this email already exists.");
+        }
+        throw new Error("An account with these details already exists.");
+      }
+      
       throw error;
     } finally {
       set({ isLoading: false });

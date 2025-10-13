@@ -22,7 +22,7 @@ import {
 } from "../types";
 
 const DATABASE_NAME = "stem_learning_final.db";
-const DATABASE_VERSION = 4;
+const DATABASE_VERSION = 5;
 
 class DatabaseService {
   private db: SQLite.SQLiteDatabase | null = null;
@@ -65,12 +65,14 @@ class DatabaseService {
     if (!this.db) return;
 
     try {
-      // Check if username column exists
+      // Check if columns exist
       const tableInfo = await this.db.getAllAsync("PRAGMA table_info(users)");
 
       const hasEmail = tableInfo.some((col: any) => col.name === "email");
       const hasUsername = tableInfo.some((col: any) => col.name === "username");
       const hasPassword = tableInfo.some((col: any) => col.name === "password");
+      const hasEducationLevel = tableInfo.some((col: any) => col.name === "educationLevel");
+      const hasGradeLevel = tableInfo.some((col: any) => col.name === "gradeLevel");
 
       // Add email column if it doesn't exist
       if (!hasEmail) {
@@ -88,6 +90,43 @@ class DatabaseService {
       if (!hasPassword) {
         await this.db.execAsync("ALTER TABLE users ADD COLUMN password TEXT");
         console.log("Added password column to users table");
+      }
+
+      // Migrate gradeLevel to educationLevel
+      if (hasGradeLevel && !hasEducationLevel) {
+        // Add new educationLevel column
+        await this.db.execAsync("ALTER TABLE users ADD COLUMN educationLevel TEXT");
+        console.log("Added educationLevel column to users table");
+
+        // Migrate data from gradeLevel to educationLevel
+        const users = await this.db.getAllAsync<any>("SELECT id, gradeLevel FROM users WHERE educationLevel IS NULL");
+        
+        for (const user of users) {
+          let educationLevel = "secondary"; // default
+          
+          // Map grade numbers to education levels
+          const grade = parseInt(user.gradeLevel);
+          if (grade >= 1 && grade <= 6) {
+            educationLevel = "primary";
+          } else if (grade >= 7 && grade <= 12) {
+            educationLevel = "secondary";
+          } else if (user.gradeLevel === "undergraduate" || user.gradeLevel === "college") {
+            educationLevel = "undergraduate";
+          } else if (user.gradeLevel === "postgraduate" || user.gradeLevel === "graduate") {
+            educationLevel = "postgraduate";
+          } else if (user.gradeLevel === "none" || user.gradeLevel === "no formal") {
+            educationLevel = "none";
+          }
+          
+          await this.db.runAsync(
+            "UPDATE users SET educationLevel = ? WHERE id = ?",
+            [educationLevel, user.id]
+          );
+        }
+        
+        if (users.length > 0) {
+          console.log(`Migrated ${users.length} users from gradeLevel to educationLevel`);
+        }
       }
 
       // Update existing users with email, username and default password
@@ -147,7 +186,7 @@ class DatabaseService {
         password TEXT,
         age INTEGER NOT NULL,
         gender TEXT NOT NULL,
-        gradeLevel TEXT NOT NULL,
+        educationLevel TEXT NOT NULL,
         avatarId TEXT NOT NULL,
         xp INTEGER DEFAULT 0,
         level INTEGER DEFAULT 1,
@@ -943,7 +982,7 @@ class DatabaseService {
     };
 
     await this.db.runAsync(
-      `INSERT INTO users (id, name, email, username, password, age, gender, gradeLevel, avatarId, xp, level, currentStreak, longestStreak, totalBadges, createdAt, lastActive, theme)
+      `INSERT INTO users (id, name, email, username, password, age, gender, educationLevel, avatarId, xp, level, currentStreak, longestStreak, totalBadges, createdAt, lastActive, theme)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         user.id,
@@ -953,7 +992,7 @@ class DatabaseService {
         password,
         user.age,
         user.gender,
-        user.gradeLevel,
+        user.educationLevel,
         user.avatarId,
         user.xp,
         user.level,

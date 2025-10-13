@@ -11,8 +11,8 @@ export interface User {
   email: string;
   username?: string;
   age: number;
-  gender: "male" | "female" | "other" | "prefer_not_to_say";
-  gradeLevel: string;
+  gender: "male" | "female";
+  educationLevel: "primary" | "secondary" | "undergraduate" | "postgraduate" | "none";
   avatarId: string;
   xp: number;
   level: number;

@@ -3,7 +3,7 @@
  * Enhanced user registration and login interface
  */
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   View,
   Text,
@@ -42,6 +42,10 @@ export default function WelcomeScreen() {
 
   const [activeTab, setActiveTab] = useState<TabType>("register");
   const [showPassword, setShowPassword] = useState(false);
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [nameError, setNameError] = useState("");
+  const [ageError, setAgeError] = useState("");
 
   // Login form state
   const [loginEmail, setLoginEmail] = useState("");
@@ -59,9 +63,15 @@ export default function WelcomeScreen() {
 
   // Animation values
   const [slideAnim] = useState(new Animated.Value(0));
+  const shakeAnim = useRef(new Animated.Value(0)).current;
 
   const handleTabSwitch = (tab: TabType) => {
     setActiveTab(tab);
+    // Clear errors when switching tabs
+    setEmailError("");
+    setPasswordError("");
+    setNameError("");
+    setAgeError("");
     Animated.spring(slideAnim, {
       toValue: tab === "login" ? 0 : 1,
       useNativeDriver: false,
@@ -70,67 +80,156 @@ export default function WelcomeScreen() {
     }).start();
   };
 
+  const triggerShake = () => {
+    Animated.sequence([
+      Animated.timing(shakeAnim, {
+        toValue: 10,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnim, {
+        toValue: -10,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnim, {
+        toValue: 10,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnim, {
+        toValue: 0,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email) {
+      setEmailError("Email is required");
+      return false;
+    }
+    if (!emailRegex.test(email)) {
+      setEmailError("Please enter a valid email address");
+      return false;
+    }
+    setEmailError("");
+    return true;
+  };
+
+  const validatePassword = (password: string, isLogin: boolean = false): boolean => {
+    if (!password) {
+      setPasswordError("Password is required");
+      return false;
+    }
+    if (!isLogin && password.length < 6) {
+      setPasswordError("Password must be at least 6 characters");
+      return false;
+    }
+    setPasswordError("");
+    return true;
+  };
+
+  const getPasswordStrength = (password: string): { strength: string; color: string; width: string } => {
+    if (!password) return { strength: "", color: colors.border, width: "0%" };
+    
+    let score = 0;
+    if (password.length >= 6) score++;
+    if (password.length >= 10) score++;
+    if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score++;
+    if (/\d/.test(password)) score++;
+    if (/[^a-zA-Z\d]/.test(password)) score++;
+
+    if (score <= 2) {
+      return { strength: "Weak", color: colors.error, width: "33%" };
+    } else if (score <= 3) {
+      return { strength: "Medium", color: colors.warning, width: "66%" };
+    } else {
+      return { strength: "Strong", color: colors.success, width: "100%" };
+    }
+  };
+
   const handleLogin = async () => {
     try {
-      if (!loginEmail || !loginPassword) {
-        Alert.alert("Required Fields", "Please enter your email and password");
+      const isEmailValid = validateEmail(loginEmail);
+      const isPasswordValid = validatePassword(loginPassword, true);
+
+      if (!isEmailValid || !isPasswordValid) {
+        triggerShake();
         return;
       }
 
       await login(loginEmail, loginPassword);
       router.replace("/(tabs)/home");
-    } catch (error) {
-      Alert.alert(
-        "Login Failed",
-        "Invalid email or password. Please try again.",
-      );
+    } catch (error: any) {
+      triggerShake();
+      
+      // Parse error message for user-friendly feedback
+      const errorMessage = error?.message || String(error);
+      
+      if (errorMessage.includes("Invalid email or password")) {
+        Alert.alert(
+          "Login Failed",
+          "The email or password you entered is incorrect. Please try again.",
+        );
+      } else if (errorMessage.includes("No user found")) {
+        setEmailError("No account found with this email");
+        Alert.alert(
+          "Account Not Found",
+          "No account exists with this email address. Please sign up first.",
+        );
+      } else {
+        Alert.alert(
+          "Login Failed",
+          "An error occurred while logging in. Please try again.",
+        );
+      }
     }
   };
 
   const handleRegister = async () => {
     try {
-      // Validate inputs
-      if (
-        !registerName ||
-        !registerEmail ||
-        !registerAge ||
-        !registerGender ||
-        !registerGrade ||
-        !registerPassword ||
-        !registerConfirmPassword
-      ) {
-        Alert.alert("Required Fields", "Please fill in all fields");
+      // Validate name
+      if (!registerName || registerName.length < 2) {
+        setNameError("Name must be at least 2 characters");
+        triggerShake();
+        return;
+      }
+      setNameError("");
+
+      // Validate email
+      if (!validateEmail(registerEmail)) {
+        triggerShake();
         return;
       }
 
+      // Validate age
       const age = parseInt(registerAge);
-      if (isNaN(age) || age < 10 || age > 20) {
-        Alert.alert("Invalid Age", "Age must be between 10 and 20");
+      if (!registerAge || isNaN(age) || age < 10 || age > 20) {
+        setAgeError("Age must be between 10 and 20");
+        triggerShake();
+        return;
+      }
+      setAgeError("");
+
+      // Validate other fields
+      if (!registerGender || !registerGrade) {
+        Alert.alert("Required Fields", "Please fill in all fields");
+        triggerShake();
         return;
       }
 
-      if (registerName.length < 2) {
-        Alert.alert("Invalid Name", "Name must be at least 2 characters");
-        return;
-      }
-
-      // Validate email format
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(registerEmail)) {
-        Alert.alert("Invalid Email", "Please enter a valid email address");
-        return;
-      }
-
-      if (registerPassword.length < 6) {
-        Alert.alert(
-          "Invalid Password",
-          "Password must be at least 6 characters",
-        );
+      // Validate password
+      if (!validatePassword(registerPassword)) {
+        triggerShake();
         return;
       }
 
       if (registerPassword !== registerConfirmPassword) {
-        Alert.alert("Password Mismatch", "Passwords do not match");
+        setPasswordError("Passwords do not match");
+        triggerShake();
         return;
       }
 
@@ -141,7 +240,7 @@ export default function WelcomeScreen() {
           email: registerEmail,
           age,
           gender: registerGender as any,
-          gradeLevel: registerGrade,
+          educationLevel: registerGrade as "primary" | "secondary" | "undergraduate" | "postgraduate" | "none",
           avatarId: "default",
           theme: theme,
         },
@@ -149,8 +248,57 @@ export default function WelcomeScreen() {
       );
 
       router.replace("/(tabs)/home");
-    } catch (error) {
-      Alert.alert("Registration Failed", "Please try again.");
+    } catch (error: any) {
+      triggerShake();
+      
+      // Parse error message for specific cases
+      const errorMessage = error?.message || String(error);
+      
+      if (errorMessage.includes("UNIQUE constraint") || 
+          errorMessage.includes("users.username") ||
+          errorMessage.includes("users.email") ||
+          errorMessage.includes("already exists")) {
+        
+        setEmailError("This email is already registered");
+        
+        Alert.alert(
+          "Email Already Taken",
+          "An account with this email address already exists. Please sign in instead or use a different email.",
+          [
+            {
+              text: "Use Different Email",
+              style: "cancel",
+            },
+            {
+              text: "Go to Sign In",
+              onPress: () => handleTabSwitch("login"),
+            },
+          ]
+        );
+      } else if (errorMessage.includes("Email already in use")) {
+        setEmailError("This email is already in use");
+        Alert.alert(
+          "Email Already Registered",
+          "This email is already registered. Please sign in or use a different email.",
+        );
+      } else if (errorMessage.includes("weak-password")) {
+        setPasswordError("Password is too weak");
+        Alert.alert(
+          "Weak Password",
+          "Please choose a stronger password with at least 6 characters.",
+        );
+      } else if (errorMessage.includes("invalid-email")) {
+        setEmailError("Invalid email format");
+        Alert.alert(
+          "Invalid Email",
+          "Please enter a valid email address.",
+        );
+      } else {
+        Alert.alert(
+          "Registration Failed",
+          "An error occurred while creating your account. Please try again.",
+        );
+      }
     }
   };
 
@@ -169,8 +317,6 @@ export default function WelcomeScreen() {
     const genders: { label: string; value: GenderType }[] = [
       { label: "Male", value: "male" },
       { label: "Female", value: "female" },
-      { label: "Other", value: "other" },
-      { label: "Prefer not to say", value: "prefer_not_to_say" },
     ];
 
     return (
@@ -194,13 +340,7 @@ export default function WelcomeScreen() {
             onPress={() => setRegisterGender(gender.value)}
           >
             <MaterialIcons
-              name={
-                gender.value === "male"
-                  ? "face"
-                  : gender.value === "female"
-                    ? "face-3"
-                    : "face-6"
-              }
+              name={gender.value === "male" ? "face" : "face-3"}
               size={24}
               color={registerGender === gender.value ? "#ffffff" : colors.text}
             />
@@ -222,31 +362,42 @@ export default function WelcomeScreen() {
   };
 
   const renderGradePicker = () => {
-    const grades = ["5", "6", "7", "8", "9", "10", "11", "12"];
+    const educationLevels = [
+      { label: "Primary Education", value: "primary" },
+      { label: "Secondary Education", value: "secondary" },
+      { label: "Undergraduate Education", value: "undergraduate" },
+      { label: "Post Graduate Education", value: "postgraduate" },
+      { label: "No Formal Education", value: "none" },
+    ];
 
     return (
-      <View style={styles.gradeGrid}>
-        {grades.map((grade) => (
+      <View style={styles.educationGrid}>
+        {educationLevels.map((education) => (
           <TouchableOpacity
-            key={grade}
+            key={education.value}
             style={[
-              styles.gradeOption,
+              styles.educationOption,
               {
                 backgroundColor:
-                  registerGrade === grade ? colors.primary : colors.surface,
+                  registerGrade === education.value ? colors.primary : colors.surface,
                 borderColor:
-                  registerGrade === grade ? colors.primary : colors.border,
+                  registerGrade === education.value ? colors.primary : colors.border,
               },
             ]}
-            onPress={() => setRegisterGrade(grade)}
+            onPress={() => setRegisterGrade(education.value)}
           >
+            <MaterialIcons
+              name="school"
+              size={20}
+              color={registerGrade === education.value ? "#ffffff" : colors.text}
+            />
             <Text
               style={[
-                styles.gradeOptionText,
-                { color: registerGrade === grade ? "#ffffff" : colors.text },
+                styles.educationOptionText,
+                { color: registerGrade === education.value ? "#ffffff" : colors.text },
               ]}
             >
-              {grade}
+              {education.label}
             </Text>
           </TouchableOpacity>
         ))}
@@ -374,7 +525,12 @@ export default function WelcomeScreen() {
         >
           {/* Login Form */}
           {activeTab === "login" && (
-            <View style={styles.form}>
+            <Animated.View 
+              style={[
+                styles.form,
+                { transform: [{ translateX: shakeAnim }] }
+              ]}
+            >
               <Text style={[styles.formTitle, { color: colors.text }]}>
                 Welcome Back!
               </Text>
@@ -386,58 +542,75 @@ export default function WelcomeScreen() {
 
               <View style={styles.inputGroup}>
                 <Text style={[styles.label, { color: colors.text }]}>
-                  Email Address
+                  Email Address <Text style={styles.required}>*</Text>
                 </Text>
                 <View
                   style={[
                     styles.inputWrapper,
                     {
                       backgroundColor: colors.background,
-                      borderColor: colors.border,
+                      borderColor: emailError ? colors.error : colors.border,
+                      borderWidth: emailError ? 2 : 1.5,
                     },
                   ]}
                 >
                   <MaterialIcons
                     name="email"
                     size={20}
-                    color={colors.textSecondary}
+                    color={emailError ? colors.error : colors.textSecondary}
                   />
                   <TextInput
                     style={[styles.input, { color: colors.text }]}
                     placeholder="Enter your email"
                     placeholderTextColor={colors.textSecondary}
                     value={loginEmail}
-                    onChangeText={setLoginEmail}
+                    onChangeText={(text) => {
+                      setLoginEmail(text);
+                      if (emailError) validateEmail(text);
+                    }}
+                    onBlur={() => validateEmail(loginEmail)}
                     autoCapitalize="none"
                     keyboardType="email-address"
                   />
                 </View>
+                {emailError ? (
+                  <View style={styles.errorContainer}>
+                    <MaterialIcons name="error-outline" size={14} color={colors.error} />
+                    <Text style={[styles.errorText, { color: colors.error }]}>
+                      {emailError}
+                    </Text>
+                  </View>
+                ) : null}
               </View>
 
               <View style={styles.inputGroup}>
                 <Text style={[styles.label, { color: colors.text }]}>
-                  Password
+                  Password <Text style={styles.required}>*</Text>
                 </Text>
                 <View
                   style={[
                     styles.inputWrapper,
                     {
                       backgroundColor: colors.background,
-                      borderColor: colors.border,
+                      borderColor: passwordError ? colors.error : colors.border,
+                      borderWidth: passwordError ? 2 : 1.5,
                     },
                   ]}
                 >
                   <MaterialIcons
                     name="lock-outline"
                     size={20}
-                    color={colors.textSecondary}
+                    color={passwordError ? colors.error : colors.textSecondary}
                   />
                   <TextInput
                     style={[styles.input, { color: colors.text }]}
                     placeholder="Enter your password"
                     placeholderTextColor={colors.textSecondary}
                     value={loginPassword}
-                    onChangeText={setLoginPassword}
+                    onChangeText={(text) => {
+                      setLoginPassword(text);
+                      if (passwordError) setPasswordError("");
+                    }}
                     secureTextEntry={!showPassword}
                   />
                   <TouchableOpacity
@@ -450,6 +623,14 @@ export default function WelcomeScreen() {
                     />
                   </TouchableOpacity>
                 </View>
+                {passwordError ? (
+                  <View style={styles.errorContainer}>
+                    <MaterialIcons name="error-outline" size={14} color={colors.error} />
+                    <Text style={[styles.errorText, { color: colors.error }]}>
+                      {passwordError}
+                    </Text>
+                  </View>
+                ) : null}
               </View>
 
               <TouchableOpacity style={styles.forgotPassword}>
@@ -463,7 +644,7 @@ export default function WelcomeScreen() {
               <TouchableOpacity
                 style={[
                   styles.primaryButton,
-                  { backgroundColor: colors.primary },
+                  { backgroundColor: colors.primary, opacity: isLoading ? 0.7 : 1 },
                 ]}
                 onPress={handleLogin}
                 disabled={isLoading}
@@ -484,12 +665,17 @@ export default function WelcomeScreen() {
                   />
                 </LinearGradient>
               </TouchableOpacity>
-            </View>
+            </Animated.View>
           )}
 
           {/* Register Form */}
           {activeTab === "register" && (
-            <View style={styles.form}>
+            <Animated.View 
+              style={[
+                styles.form,
+                { transform: [{ translateX: shakeAnim }] }
+              ]}
+            >
               <Text style={[styles.formTitle, { color: colors.text }]}>
                 Join STEMtastic!
               </Text>
@@ -501,130 +687,157 @@ export default function WelcomeScreen() {
 
               <View style={styles.inputGroup}>
                 <Text style={[styles.label, { color: colors.text }]}>
-                  Full Name
+                  Full Name <Text style={styles.required}>*</Text>
                 </Text>
                 <View
                   style={[
                     styles.inputWrapper,
                     {
                       backgroundColor: colors.background,
-                      borderColor: colors.border,
+                      borderColor: nameError ? colors.error : colors.border,
+                      borderWidth: nameError ? 2 : 1.5,
                     },
                   ]}
                 >
                   <MaterialIcons
                     name="person-outline"
                     size={20}
-                    color={colors.textSecondary}
+                    color={nameError ? colors.error : colors.textSecondary}
                   />
                   <TextInput
                     style={[styles.input, { color: colors.text }]}
                     placeholder="Enter your full name"
                     placeholderTextColor={colors.textSecondary}
                     value={registerName}
-                    onChangeText={setRegisterName}
+                    onChangeText={(text) => {
+                      setRegisterName(text);
+                      if (nameError) setNameError("");
+                    }}
                   />
                 </View>
+                {nameError ? (
+                  <View style={styles.errorContainer}>
+                    <MaterialIcons name="error-outline" size={14} color={colors.error} />
+                    <Text style={[styles.errorText, { color: colors.error }]}>
+                      {nameError}
+                    </Text>
+                  </View>
+                ) : null}
               </View>
 
               <View style={styles.inputGroup}>
                 <Text style={[styles.label, { color: colors.text }]}>
-                  Email Address
+                  Email Address <Text style={styles.required}>*</Text>
                 </Text>
                 <View
                   style={[
                     styles.inputWrapper,
                     {
                       backgroundColor: colors.background,
-                      borderColor: colors.border,
+                      borderColor: emailError ? colors.error : colors.border,
+                      borderWidth: emailError ? 2 : 1.5,
                     },
                   ]}
                 >
                   <MaterialIcons
                     name="email"
                     size={20}
-                    color={colors.textSecondary}
+                    color={emailError ? colors.error : colors.textSecondary}
                   />
                   <TextInput
                     style={[styles.input, { color: colors.text }]}
                     placeholder="Enter your email"
                     placeholderTextColor={colors.textSecondary}
                     value={registerEmail}
-                    onChangeText={setRegisterEmail}
+                    onChangeText={(text) => {
+                      setRegisterEmail(text);
+                      if (emailError) validateEmail(text);
+                    }}
+                    onBlur={() => validateEmail(registerEmail)}
                     autoCapitalize="none"
                     keyboardType="email-address"
                   />
                 </View>
+                {emailError ? (
+                  <View style={styles.errorContainer}>
+                    <MaterialIcons name="error-outline" size={14} color={colors.error} />
+                    <Text style={[styles.errorText, { color: colors.error }]}>
+                      {emailError}
+                    </Text>
+                  </View>
+                ) : null}
               </View>
 
               <View style={styles.inputGroup}>
                 <Text style={[styles.label, { color: colors.text }]}>
-                  Age (10-20)
+                  Age (10-20) <Text style={styles.required}>*</Text>
                 </Text>
                 <View
                   style={[
                     styles.inputWrapper,
                     {
                       backgroundColor: colors.background,
-                      borderColor: colors.border,
+                      borderColor: ageError ? colors.error : colors.border,
+                      borderWidth: ageError ? 2 : 1.5,
                     },
                   ]}
                 >
                   <MaterialIcons
                     name="cake"
                     size={20}
-                    color={colors.textSecondary}
+                    color={ageError ? colors.error : colors.textSecondary}
                   />
                   <TextInput
                     style={[styles.input, { color: colors.text }]}
                     placeholder="Enter your age"
                     placeholderTextColor={colors.textSecondary}
                     value={registerAge}
-                    onChangeText={setRegisterAge}
+                    onChangeText={(text) => {
+                      setRegisterAge(text);
+                      if (ageError) setAgeError("");
+                    }}
                     keyboardType="number-pad"
                     maxLength={2}
                   />
                 </View>
+                {ageError ? (
+                  <View style={styles.errorContainer}>
+                    <MaterialIcons name="error-outline" size={14} color={colors.error} />
+                    <Text style={[styles.errorText, { color: colors.error }]}>
+                      {ageError}
+                    </Text>
+                  </View>
+                ) : null}
               </View>
 
               <View style={styles.inputGroup}>
                 <Text style={[styles.label, { color: colors.text }]}>
-                  Gender
-                </Text>
-                {renderGenderPicker()}
-              </View>
-
-              <View style={styles.inputGroup}>
-                <Text style={[styles.label, { color: colors.text }]}>
-                  Grade Level
-                </Text>
-                {renderGradePicker()}
-              </View>
-
-              <View style={styles.inputGroup}>
-                <Text style={[styles.label, { color: colors.text }]}>
-                  Password
+                  Password <Text style={styles.required}>*</Text>
                 </Text>
                 <View
                   style={[
                     styles.inputWrapper,
                     {
                       backgroundColor: colors.background,
-                      borderColor: colors.border,
+                      borderColor: passwordError ? colors.error : colors.border,
+                      borderWidth: passwordError ? 2 : 1.5,
                     },
                   ]}
                 >
                   <MaterialIcons
                     name="lock-outline"
                     size={20}
-                    color={colors.textSecondary}
+                    color={passwordError ? colors.error : colors.textSecondary}
                   />
                   <TextInput
                     style={[styles.input, { color: colors.text }]}
                     placeholder="Create a password"
                     placeholderTextColor={colors.textSecondary}
                     value={registerPassword}
-                    onChangeText={setRegisterPassword}
+                    onChangeText={(text) => {
+                      setRegisterPassword(text);
+                      if (passwordError) setPasswordError("");
+                    }}
                     secureTextEntry={!showRegisterPassword}
                   />
                   <TouchableOpacity
@@ -641,37 +854,73 @@ export default function WelcomeScreen() {
                     />
                   </TouchableOpacity>
                 </View>
-                <Text
-                  style={[styles.helperText, { color: colors.textSecondary }]}
-                >
-                  Must be at least 6 characters
-                </Text>
+                {registerPassword ? (
+                  <View style={styles.passwordStrength}>
+                    <View style={styles.passwordStrengthBar}>
+                      <View
+                        style={[
+                          styles.passwordStrengthFill,
+                          {
+                            width: getPasswordStrength(registerPassword).width as any,
+                            backgroundColor: getPasswordStrength(registerPassword).color,
+                          },
+                        ]}
+                      />
+                    </View>
+                    <Text
+                      style={[
+                        styles.passwordStrengthText,
+                        { color: getPasswordStrength(registerPassword).color },
+                      ]}
+                    >
+                      {getPasswordStrength(registerPassword).strength}
+                    </Text>
+                  </View>
+                ) : (
+                  <Text
+                    style={[styles.helperText, { color: colors.textSecondary }]}
+                  >
+                    Must be at least 6 characters
+                  </Text>
+                )}
+                {passwordError ? (
+                  <View style={styles.errorContainer}>
+                    <MaterialIcons name="error-outline" size={14} color={colors.error} />
+                    <Text style={[styles.errorText, { color: colors.error }]}>
+                      {passwordError}
+                    </Text>
+                  </View>
+                ) : null}
               </View>
 
               <View style={styles.inputGroup}>
                 <Text style={[styles.label, { color: colors.text }]}>
-                  Confirm Password
+                  Confirm Password <Text style={styles.required}>*</Text>
                 </Text>
                 <View
                   style={[
                     styles.inputWrapper,
                     {
                       backgroundColor: colors.background,
-                      borderColor: colors.border,
+                      borderColor: passwordError ? colors.error : colors.border,
+                      borderWidth: passwordError ? 2 : 1.5,
                     },
                   ]}
                 >
                   <MaterialIcons
                     name="lock-outline"
                     size={20}
-                    color={colors.textSecondary}
+                    color={passwordError ? colors.error : colors.textSecondary}
                   />
                   <TextInput
                     style={[styles.input, { color: colors.text }]}
                     placeholder="Confirm your password"
                     placeholderTextColor={colors.textSecondary}
                     value={registerConfirmPassword}
-                    onChangeText={setRegisterConfirmPassword}
+                    onChangeText={(text) => {
+                      setRegisterConfirmPassword(text);
+                      if (passwordError) setPasswordError("");
+                    }}
                     secureTextEntry={!showRegisterPassword}
                   />
                   <TouchableOpacity
@@ -690,10 +939,24 @@ export default function WelcomeScreen() {
                 </View>
               </View>
 
+              <View style={styles.inputGroup}>
+                <Text style={[styles.label, { color: colors.text }]}>
+                  Gender <Text style={styles.required}>*</Text>
+                </Text>
+                {renderGenderPicker()}
+              </View>
+
+              <View style={styles.inputGroup}>
+                <Text style={[styles.label, { color: colors.text }]}>
+                  Education Level <Text style={styles.required}>*</Text>
+                </Text>
+                {renderGradePicker()}
+              </View>
+
               <TouchableOpacity
                 style={[
                   styles.primaryButton,
-                  { backgroundColor: colors.primary },
+                  { backgroundColor: colors.primary, opacity: isLoading ? 0.7 : 1 },
                 ]}
                 onPress={handleRegister}
                 disabled={isLoading}
@@ -714,7 +977,7 @@ export default function WelcomeScreen() {
                   />
                 </LinearGradient>
               </TouchableOpacity>
-            </View>
+            </Animated.View>
           )}
         </View>
 
@@ -922,6 +1185,24 @@ const styles = StyleSheet.create({
     fontSize: Typography.fontSize.lg,
     fontWeight: Typography.fontWeight.bold,
   },
+  educationGrid: {
+    gap: Spacing.sm,
+  },
+  educationOption: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 2,
+    gap: Spacing.sm,
+    marginBottom: Spacing.sm,
+  },
+  educationOptionText: {
+    fontSize: Typography.fontSize.sm,
+    fontWeight: Typography.fontWeight.medium,
+    flex: 1,
+  },
   guestSection: {
     marginTop: Spacing.lg,
   },
@@ -956,5 +1237,38 @@ const styles = StyleSheet.create({
     fontSize: Typography.fontSize.xs,
     marginTop: 4,
     fontStyle: "italic",
+  },
+  required: {
+    color: "#ef4444",
+    fontWeight: Typography.fontWeight.bold,
+  },
+  errorContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 4,
+    gap: 4,
+  },
+  errorText: {
+    fontSize: Typography.fontSize.xs,
+    fontWeight: Typography.fontWeight.medium,
+  },
+  passwordStrength: {
+    marginTop: 8,
+    gap: 4,
+  },
+  passwordStrengthBar: {
+    height: 4,
+    backgroundColor: "#e5e7eb",
+    borderRadius: 2,
+    overflow: "hidden",
+  },
+  passwordStrengthFill: {
+    height: "100%",
+    borderRadius: 2,
+  },
+  passwordStrengthText: {
+    fontSize: Typography.fontSize.xs,
+    fontWeight: Typography.fontWeight.medium,
+    textAlign: "right",
   },
 });
