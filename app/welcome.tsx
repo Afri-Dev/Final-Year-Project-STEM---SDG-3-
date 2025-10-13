@@ -240,7 +240,7 @@ export default function WelcomeScreen() {
           email: registerEmail,
           age,
           gender: registerGender as any,
-          educationLevel: registerGrade as "primary" | "secondary" | "undergraduate" | "postgraduate" | "none",
+          educationLevel: registerGrade as any,
           avatarId: "default",
           theme: theme,
         },
@@ -366,7 +366,8 @@ export default function WelcomeScreen() {
       { label: "Primary Education", value: "primary" },
       { label: "Secondary Education", value: "secondary" },
       { label: "Undergraduate Education", value: "undergraduate" },
-      { label: "Post Graduate Education", value: "postgraduate" },
+      { label: "Master's Education", value: "masters" },
+      { label: "PhD Education", value: "phd" },
       { label: "No Formal Education", value: "none" },
     ];
 

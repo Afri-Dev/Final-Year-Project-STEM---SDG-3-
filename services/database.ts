@@ -22,7 +22,7 @@ import {
 } from "../types";
 
 const DATABASE_NAME = "stem_learning_final.db";
-const DATABASE_VERSION = 5;
+const DATABASE_VERSION = 6;
 
 class DatabaseService {
   private db: SQLite.SQLiteDatabase | null = null;
@@ -99,33 +99,42 @@ class DatabaseService {
         console.log("Added educationLevel column to users table");
 
         // Migrate data from gradeLevel to educationLevel
-        const users = await this.db.getAllAsync<any>("SELECT id, gradeLevel FROM users WHERE educationLevel IS NULL");
+        const users = await this.db.getAllAsync<any>("SELECT id, gradeLevel, educationLevel FROM users");
         
         for (const user of users) {
-          let educationLevel = "secondary"; // default
+          let educationLevel = user.educationLevel || "secondary"; // default
           
-          // Map grade numbers to education levels
-          const grade = parseInt(user.gradeLevel);
-          if (grade >= 1 && grade <= 6) {
-            educationLevel = "primary";
-          } else if (grade >= 7 && grade <= 12) {
-            educationLevel = "secondary";
-          } else if (user.gradeLevel === "undergraduate" || user.gradeLevel === "college") {
-            educationLevel = "undergraduate";
-          } else if (user.gradeLevel === "postgraduate" || user.gradeLevel === "graduate") {
-            educationLevel = "postgraduate";
-          } else if (user.gradeLevel === "none" || user.gradeLevel === "no formal") {
-            educationLevel = "none";
+          // Only migrate if educationLevel is null or needs updating from old postgraduate value
+          if (!user.educationLevel || user.educationLevel === "postgraduate") {
+            // Map grade numbers to education levels
+            const grade = parseInt(user.gradeLevel || "");
+            if (grade >= 1 && grade <= 6) {
+              educationLevel = "primary";
+            } else if (grade >= 7 && grade <= 12) {
+              educationLevel = "secondary";
+            } else if (user.gradeLevel === "undergraduate" || user.gradeLevel === "college") {
+              educationLevel = "undergraduate";
+            } else if (user.gradeLevel === "postgraduate" || user.gradeLevel === "graduate" || user.educationLevel === "postgraduate") {
+              // Default postgraduate to masters, but could be improved with user input
+              educationLevel = "masters";
+            } else if (user.gradeLevel === "masters" || user.gradeLevel === "master") {
+              educationLevel = "masters";
+            } else if (user.gradeLevel === "phd" || user.gradeLevel === "doctorate") {
+              educationLevel = "phd";
+            } else if (user.gradeLevel === "none" || user.gradeLevel === "no formal") {
+              educationLevel = "none";
+            }
+            
+            await this.db.runAsync(
+              "UPDATE users SET educationLevel = ? WHERE id = ?",
+              [educationLevel, user.id]
+            );
           }
-          
-          await this.db.runAsync(
-            "UPDATE users SET educationLevel = ? WHERE id = ?",
-            [educationLevel, user.id]
-          );
         }
         
-        if (users.length > 0) {
-          console.log(`Migrated ${users.length} users from gradeLevel to educationLevel`);
+        const migratedUsers = users.filter(u => !u.educationLevel || u.educationLevel === "postgraduate");
+        if (migratedUsers.length > 0) {
+          console.log(`Migrated ${migratedUsers.length} users to new education level system`);
         }
       }
 
