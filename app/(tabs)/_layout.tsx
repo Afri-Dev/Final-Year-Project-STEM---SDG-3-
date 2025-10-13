@@ -60,12 +60,12 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="quiz"
+        name="leaderboard"
         options={{
-          title: 'Quiz',
+          title: 'Leaderboard',
           tabBarIcon: ({ color, size, focused }) => (
             <MaterialIcons
-              name={focused ? 'quiz' : 'quiz'}
+              name={focused ? 'leaderboard' : 'leaderboard'}
               size={size}
               color={color}
             />
