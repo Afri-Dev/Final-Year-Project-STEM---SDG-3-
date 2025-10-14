@@ -31,7 +31,7 @@ import {
 } from '../types';
 
 // Database version for migrations
-const DATABASE_VERSION = 6;
+const DATABASE_VERSION = 7;
 
 class DatabaseService {
   private db: SQLite.SQLiteDatabase | null = null;
@@ -137,7 +137,8 @@ class DatabaseService {
         totalBadges INTEGER DEFAULT 0,
         createdAt TEXT NOT NULL,
         lastActive TEXT NOT NULL,
-        theme TEXT DEFAULT 'light'
+        theme TEXT DEFAULT 'light',
+        themeColor TEXT
       );
     `);
 
@@ -380,6 +381,26 @@ class DatabaseService {
         console.log('✅ Migration v6: Schema reset completed at initialization');
       }
 
+      // Migration v7: Add themeColor column for gender-based themes
+      if (currentVersion < 7) {
+        try {
+          await this.db.execAsync(`ALTER TABLE users ADD COLUMN themeColor TEXT;`);
+          
+          // Update existing users with theme color based on gender
+          const users = await this.db.getAllAsync<any>('SELECT id, gender FROM users');
+          for (const user of users) {
+            const themeColor = user.gender === 'female' ? '#FF48E3' : '#13a4ec';
+            await this.db.runAsync(
+              'UPDATE users SET themeColor = ? WHERE id = ?',
+              [themeColor, user.id]
+            );
+          }
+          console.log('✅ Migration v7: Added themeColor column');
+        } catch (error) {
+          console.log('⚠️  Migration v7: May already be applied');
+        }
+      }
+
       await this.db.runAsync('DELETE FROM database_version');
       await this.db.runAsync('INSERT INTO database_version (version) VALUES (?)', [DATABASE_VERSION]);
     }
@@ -497,6 +518,9 @@ class DatabaseService {
     const id = `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     const username = userData.email.split('@')[0].toLowerCase();
     const now = new Date().toISOString();
+    
+    // Set theme color based on gender
+    const themeColor = userData.gender === 'female' ? '#FF48E3' : '#13a4ec';
 
     const user: User = {
       id,
@@ -509,12 +533,13 @@ class DatabaseService {
       totalBadges: 0,
       createdAt: now,
       lastActive: now,
+      themeColor,
     };
 
     await this.db.runAsync(
-      `INSERT INTO users (id, name, email, username, password, age, gender, educationLevel, avatarId, xp, level, currentStreak, longestStreak, totalBadges, createdAt, lastActive, theme)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [user.id, user.name, user.email, username, password, user.age, user.gender, user.educationLevel, user.avatarId, user.xp, user.level, user.currentStreak, user.longestStreak, user.totalBadges, user.createdAt, user.lastActive, user.theme]
+      `INSERT INTO users (id, name, email, username, password, age, gender, educationLevel, avatarId, xp, level, currentStreak, longestStreak, totalBadges, createdAt, lastActive, theme, themeColor)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [user.id, user.name, user.email, username, password, user.age, user.gender, user.educationLevel, user.avatarId, user.xp, user.level, user.currentStreak, user.longestStreak, user.totalBadges, user.createdAt, user.lastActive, user.theme, themeColor]
     );
 
     await SecureStore.setItemAsync('current_user_id', id);

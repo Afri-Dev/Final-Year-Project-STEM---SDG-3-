@@ -62,6 +62,26 @@ export const Colors = {
   },
 };
 
+// ==================== Gender-Based Theme Colors ====================
+
+export const GenderThemeColors = {
+  male: {
+    primary: '#13a4ec',
+    primaryLight: '#13a4ec33',
+    primaryDark: '#0f8bc9',
+  },
+  female: {
+    primary: '#FF48E3',
+    primaryLight: '#FF48E333',
+    primaryDark: '#E03CCB',
+  },
+  default: {
+    primary: '#13a4ec',
+    primaryLight: '#13a4ec33',
+    primaryDark: '#0f8bc9',
+  },
+};
+
 // ==================== Typography ====================
 
 export const Typography = {
@@ -314,7 +334,37 @@ export const ICON_MAP = {
 
 // ==================== Helper Functions ====================
 
-export const getColorScheme = (isDark: boolean) => (isDark ? Colors.dark : Colors.light);
+export const getColorScheme = (isDark: boolean, gender?: 'male' | 'female') => {
+  const baseColors = isDark ? Colors.dark : Colors.light;
+  
+  // Apply gender-based theme colors
+  if (gender === 'female') {
+    return {
+      ...baseColors,
+      primary: GenderThemeColors.female.primary,
+      primaryLight: GenderThemeColors.female.primaryLight,
+      primaryDark: GenderThemeColors.female.primaryDark,
+    };
+  } else if (gender === 'male') {
+    return {
+      ...baseColors,
+      primary: GenderThemeColors.male.primary,
+      primaryLight: GenderThemeColors.male.primaryLight,
+      primaryDark: GenderThemeColors.male.primaryDark,
+    };
+  }
+  
+  return baseColors;
+};
+
+export const getPrimaryColorForGender = (gender: 'male' | 'female' | string): string => {
+  if (gender === 'female') {
+    return GenderThemeColors.female.primary;
+  } else if (gender === 'male') {
+    return GenderThemeColors.male.primary;
+  }
+  return GenderThemeColors.default.primary;
+};
 
 export const getLevelInfo = (xp: number) => {
   let currentLevel = XP_LEVELS[0];

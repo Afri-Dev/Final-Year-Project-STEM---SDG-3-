@@ -3,7 +3,7 @@
  * Enhanced user registration and login interface
  */
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useMemo } from "react";
 import {
   View,
   Text,
@@ -26,6 +26,8 @@ import {
   Spacing,
   BorderRadius,
   Shadows,
+  getPrimaryColorForGender,
+  getColorScheme,
 } from "../constants/theme";
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -36,9 +38,8 @@ const { width } = Dimensions.get("window");
 
 export default function WelcomeScreen() {
   const router = useRouter();
-  const { login, register, isLoading } = useAuthStore();
+  const { login, register, isLoading, user } = useAuthStore();
   const { theme } = useThemeStore();
-  const colors = theme === "dark" ? Colors.dark : Colors.light;
 
   const [activeTab, setActiveTab] = useState<TabType>("register");
   const [showPassword, setShowPassword] = useState(false);
@@ -60,6 +61,14 @@ export default function WelcomeScreen() {
   const [registerPassword, setRegisterPassword] = useState("");
   const [registerConfirmPassword, setRegisterConfirmPassword] = useState("");
   const [showRegisterPassword, setShowRegisterPassword] = useState(false);
+
+  // Use gender-based theme - dynamically updates when gender selection changes
+  const colors = useMemo(() => {
+    const genderValue = registerGender && registerGender !== 'other' && registerGender !== 'prefer_not_to_say' 
+      ? registerGender as 'male' | 'female'
+      : undefined;
+    return getColorScheme(theme === "dark", genderValue);
+  }, [theme, registerGender]);
 
   // Animation values
   const [slideAnim] = useState(new Animated.Value(0));
@@ -314,49 +323,54 @@ export default function WelcomeScreen() {
   };
 
   const renderGenderPicker = () => {
-    const genders: { label: string; value: GenderType }[] = [
-      { label: "Male", value: "male" },
-      { label: "Female", value: "female" },
+    const genders: { label: string; value: GenderType; themeColor: string }[] = [
+      { label: "Male", value: "male", themeColor: "#13a4ec" },
+      { label: "Female", value: "female", themeColor: "#FF48E3" },
     ];
 
     return (
       <View style={styles.pickerGrid}>
-        {genders.map((gender) => (
-          <TouchableOpacity
-            key={gender.value}
-            style={[
-              styles.pickerOption,
-              {
-                backgroundColor:
-                  registerGender === gender.value
-                    ? colors.primary
-                    : colors.surface,
-                borderColor:
-                  registerGender === gender.value
-                    ? colors.primary
-                    : colors.border,
-              },
-            ]}
-            onPress={() => setRegisterGender(gender.value)}
-          >
-            <MaterialIcons
-              name={gender.value === "male" ? "face" : "face-3"}
-              size={24}
-              color={registerGender === gender.value ? "#ffffff" : colors.text}
-            />
-            <Text
+        {genders.map((gender) => {
+          const isSelected = registerGender === gender.value;
+          const borderColor = isSelected ? gender.themeColor : colors.border;
+          const backgroundColor = isSelected ? gender.themeColor : colors.surface;
+          
+          return (
+            <TouchableOpacity
+              key={gender.value}
               style={[
-                styles.pickerOptionText,
+                styles.pickerOption,
                 {
-                  color:
-                    registerGender === gender.value ? "#ffffff" : colors.text,
+                  backgroundColor,
+                  borderColor,
+                  borderWidth: 2,
                 },
               ]}
+              onPress={() => setRegisterGender(gender.value)}
             >
-              {gender.label}
-            </Text>
-          </TouchableOpacity>
-        ))}
+              <MaterialIcons
+                name={gender.value === "male" ? "face" : "face-3"}
+                size={24}
+                color={isSelected ? "#ffffff" : colors.text}
+              />
+              <Text
+                style={[
+                  styles.pickerOptionText,
+                  {
+                    color: isSelected ? "#ffffff" : colors.text,
+                  },
+                ]}
+              >
+                {gender.label}
+              </Text>
+              {isSelected && (
+                <View style={styles.themeColorIndicator}>
+                  <MaterialIcons name="palette" size={16} color="#ffffff" />
+                </View>
+              )}
+            </TouchableOpacity>
+          );
+        })}
       </View>
     );
   };
@@ -1164,10 +1178,19 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     gap: Spacing.sm,
     width: "48%",
+    position: "relative" as "relative",
   },
   pickerOptionText: {
     fontSize: Typography.fontSize.sm,
     fontWeight: Typography.fontWeight.medium,
+  },
+  themeColorIndicator: {
+    position: "absolute" as "absolute",
+    top: 4,
+    right: 4,
+    backgroundColor: "rgba(255, 255, 255, 0.3)",
+    borderRadius: BorderRadius.full,
+    padding: 2,
   },
   gradeGrid: {
     flexDirection: "row",

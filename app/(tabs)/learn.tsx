@@ -15,14 +15,16 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useLearningStore, useThemeStore } from '../../services/store';
-import { Colors, Typography, Spacing, BorderRadius, Shadows, SUBJECT_CONFIG } from '../../constants/theme';
+import { useLearningStore, useThemeStore, useAuthStore } from '../../services/store';
+import { Colors, Typography, Spacing, BorderRadius, Shadows, SUBJECT_CONFIG, getColorScheme } from '../../constants/theme';
 
 export default function LearnScreen() {
   const router = useRouter();
   const { subjects, loadSubjects, progress } = useLearningStore();
   const { theme } = useThemeStore();
-  const colors = theme === 'dark' ? Colors.dark : Colors.light;
+  const { user } = useAuthStore();
+  // Use gender-based theme for consistent colors
+  const colors = getColorScheme(theme === 'dark', user?.gender);
 
   const [refreshing, setRefreshing] = React.useState(false);
 

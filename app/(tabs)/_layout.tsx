@@ -6,12 +6,14 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useThemeStore } from '../../services/store';
-import { Colors } from '../../constants/theme';
+import { useThemeStore, useAuthStore } from '../../services/store';
+import { Colors, getColorScheme } from '../../constants/theme';
 
 export default function TabLayout() {
   const { theme } = useThemeStore();
-  const colors = theme === 'dark' ? Colors.dark : Colors.light;
+  const { user } = useAuthStore();
+  // Use gender-based theme for consistent colors in tab bar
+  const colors = getColorScheme(theme === 'dark', user?.gender);
 
   return (
     <Tabs

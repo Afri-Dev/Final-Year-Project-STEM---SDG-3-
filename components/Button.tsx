@@ -12,7 +12,7 @@ import {
   ViewStyle,
   TextStyle,
 } from "react-native";
-import { Colors, BorderRadius, Spacing, Typography } from "../constants/theme";
+import { Colors, BorderRadius, Spacing, Typography, getColorScheme } from "../constants/theme";
 
 interface ButtonProps {
   title: string;
@@ -26,6 +26,7 @@ interface ButtonProps {
   style?: ViewStyle;
   textStyle?: TextStyle;
   theme?: "light" | "dark";
+  gender?: "male" | "female"; // Support gender-based theming
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -40,8 +41,10 @@ export const Button: React.FC<ButtonProps> = ({
   style,
   textStyle,
   theme = "light",
+  gender,
 }) => {
-  const colors = theme === "dark" ? Colors.dark : Colors.light;
+  // Use gender-based theme for consistent colors
+  const colors = getColorScheme(theme === "dark", gender);
 
   const getButtonStyle = (): ViewStyle => {
     const baseStyle: ViewStyle = {

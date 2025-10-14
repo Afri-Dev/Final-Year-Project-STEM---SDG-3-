@@ -17,7 +17,7 @@ import {
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useAuthStore, useLearningStore, useThemeStore } from '../../services/store';
-import { Colors, Typography, Spacing, BorderRadius, Shadows, getLevelInfo } from '../../constants/theme';
+import { Colors, Typography, Spacing, BorderRadius, Shadows, getLevelInfo, getColorScheme } from '../../constants/theme';
 import { LinearGradient } from 'expo-linear-gradient';
 
 export default function HomeScreen() {
@@ -25,7 +25,7 @@ export default function HomeScreen() {
   const { user, refreshUser } = useAuthStore();
   const { subjects, loadSubjects } = useLearningStore();
   const { theme } = useThemeStore();
-  const colors = theme === 'dark' ? Colors.dark : Colors.light;
+  const colors = getColorScheme(theme === 'dark', user?.gender);
 
   const [refreshing, setRefreshing] = React.useState(false);
 

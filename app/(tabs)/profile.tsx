@@ -16,13 +16,14 @@ import {
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useAuthStore, useThemeStore } from '../../services/store';
-import { Colors, Typography, Spacing, BorderRadius, Shadows, getLevelInfo } from '../../constants/theme';
+import { Colors, Typography, Spacing, BorderRadius, Shadows, getLevelInfo, getColorScheme } from '../../constants/theme';
 
 export default function ProfileScreen() {
   const router = useRouter();
   const { user, refreshUser, logout } = useAuthStore();
   const { theme, toggleTheme } = useThemeStore();
-  const colors = theme === 'dark' ? Colors.dark : Colors.light;
+  // Use gender-based theme for consistent colors
+  const colors = getColorScheme(theme === 'dark', user?.gender);
 
   const [refreshing, setRefreshing] = React.useState(false);
 
