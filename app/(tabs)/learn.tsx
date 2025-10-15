@@ -1,9 +1,3 @@
-/**
- * Learn Screen
- * Browse and select subjects and topics for learning
- * Based on: assets/PHOTOS/subject_menu/code.html
- */
-
 import React, { useEffect } from 'react';
 import {
   View,
@@ -20,7 +14,7 @@ import { Colors, Typography, Spacing, BorderRadius, Shadows, SUBJECT_CONFIG, get
 
 export default function LearnScreen() {
   const router = useRouter();
-  const { subjects, loadSubjects, progress } = useLearningStore();
+  const { subjects, loadSubjects } = useLearningStore();
   const { theme } = useThemeStore();
   const { user } = useAuthStore();
   // Use gender-based theme for consistent colors
@@ -39,14 +33,22 @@ export default function LearnScreen() {
   };
 
   const getSubjectProgress = (subjectId: string) => {
-    // Calculate average progress across all topics in this subject
-    // This is a placeholder - implement actual calculation
-    return Math.floor(Math.random() * 100);
+    // For now, we'll use a placeholder value
+    // In a real implementation, this would come from the progress data
+    const progressMap: Record<string, number> = {
+      'sci': 75,
+      'tech': 50,
+      'eng': 25,
+      'math': 90,
+    };
+    return progressMap[subjectId] || 0;
   };
 
   const renderProgressCircle = (percentage: number, color: string) => {
     const radius = 28;
-    const circumference = 2 * Math.PI * radius;
+    const strokeWidth = 3;
+    const normalizedRadius = radius - strokeWidth * 2;
+    const circumference = normalizedRadius * 2 * Math.PI;
     const strokeDashoffset = circumference - (percentage / 100) * circumference;
 
     return (
@@ -63,7 +65,8 @@ export default function LearnScreen() {
               styles.progressCircleFill,
               {
                 borderColor: color,
-                borderWidth: 3,
+                borderWidth: strokeWidth,
+                transform: [{ rotate: '-90deg' }],
               },
             ]}
           />
@@ -134,73 +137,13 @@ export default function LearnScreen() {
                     >
                       {subject.description}
                     </Text>
-                    <View style={styles.topicsInfo}>
-                      <MaterialIcons
-                        name="menu-book"
-                        size={14}
-                        color={colors.textSecondary}
-                      />
-                      <Text style={[styles.topicsText, { color: colors.textSecondary }]}>
-                        {subject.totalTopics} topics
-                      </Text>
-                    </View>
                   </View>
-                </View>
 
-                <View style={styles.progressSection}>
-                  <View style={styles.progressInfo}>
-                    <Text style={[styles.progressLabel, { color: colors.textSecondary }]}>
-                      Progress
-                    </Text>
-                    <Text style={[styles.progressValue, { color: subjectColor }]}>
-                      {progressPercentage}%
-                    </Text>
-                  </View>
-                  <View style={[styles.progressBar, { backgroundColor: `${subjectColor}20` }]}>
-                    <View
-                      style={[
-                        styles.progressFill,
-                        {
-                          backgroundColor: subjectColor,
-                          width: `${progressPercentage}%`,
-                        },
-                      ]}
-                    />
-                  </View>
+                  {renderProgressCircle(progressPercentage, subjectColor)}
                 </View>
               </TouchableOpacity>
             );
           })}
-        </View>
-
-        {/* Stats Section */}
-        <View style={[styles.statsCard, { backgroundColor: colors.surface }, Shadows.md]}>
-          <Text style={[styles.statsTitle, { color: colors.text }]}>
-            Your Learning Journey
-          </Text>
-          <View style={styles.statsGrid}>
-            <View style={styles.statItem}>
-              <MaterialIcons name="menu-book" size={28} color={colors.primary} />
-              <Text style={[styles.statValue, { color: colors.text }]}>12</Text>
-              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
-                Lessons Completed
-              </Text>
-            </View>
-            <View style={styles.statItem}>
-              <MaterialIcons name="quiz" size={28} color={colors.technology} />
-              <Text style={[styles.statValue, { color: colors.text }]}>8</Text>
-              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
-                Quizzes Passed
-              </Text>
-            </View>
-            <View style={styles.statItem}>
-              <MaterialIcons name="timer" size={28} color={colors.engineering} />
-              <Text style={[styles.statValue, { color: colors.text }]}>4.5h</Text>
-              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
-                Time Spent
-              </Text>
-            </View>
-          </View>
         </View>
 
         <View style={{ height: 40 }} />
@@ -238,7 +181,7 @@ const styles = StyleSheet.create({
   },
   subjectContent: {
     flexDirection: 'row',
-    marginBottom: Spacing.md,
+    alignItems: 'center',
   },
   subjectIcon: {
     width: 64,
@@ -260,39 +203,6 @@ const styles = StyleSheet.create({
   subjectDescription: {
     fontSize: Typography.fontSize.sm,
     lineHeight: Typography.fontSize.sm * Typography.lineHeight.normal,
-    marginBottom: Spacing.xs,
-  },
-  topicsInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  topicsText: {
-    fontSize: Typography.fontSize.xs,
-  },
-  progressSection: {
-    marginTop: Spacing.sm,
-  },
-  progressInfo: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: Spacing.xs,
-  },
-  progressLabel: {
-    fontSize: Typography.fontSize.sm,
-  },
-  progressValue: {
-    fontSize: Typography.fontSize.sm,
-    fontWeight: Typography.fontWeight.bold,
-  },
-  progressBar: {
-    height: 6,
-    borderRadius: 3,
-    overflow: 'hidden',
-  },
-  progressFill: {
-    height: '100%',
-    borderRadius: 3,
   },
   progressCircleContainer: {
     position: 'relative',
@@ -318,36 +228,11 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 32,
+    borderStyle: 'solid',
   },
   progressPercentage: {
     position: 'absolute',
     fontSize: Typography.fontSize.sm,
     fontWeight: Typography.fontWeight.bold,
-  },
-  statsCard: {
-    borderRadius: BorderRadius.xl,
-    padding: Spacing.lg,
-    marginBottom: Spacing.lg,
-  },
-  statsTitle: {
-    fontSize: Typography.fontSize.xl,
-    fontWeight: Typography.fontWeight.bold,
-    marginBottom: Spacing.lg,
-  },
-  statsGrid: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  statItem: {
-    alignItems: 'center',
-    gap: Spacing.sm,
-  },
-  statValue: {
-    fontSize: Typography.fontSize['2xl'],
-    fontWeight: Typography.fontWeight.bold,
-  },
-  statLabel: {
-    fontSize: Typography.fontSize.xs,
-    textAlign: 'center',
   },
 });
