@@ -227,7 +227,6 @@ export default function HomeScreen() {
           </View>
         </View>
 
-
         {/* Bottom spacing */}
         <View style={{ height: 10 }} />
       </ScrollView>

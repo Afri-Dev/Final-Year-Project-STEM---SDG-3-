@@ -46,9 +46,9 @@ export default function ProfileScreen() {
 
   // Sample badges (replace with actual data from database)
   const sampleBadges = [
-    { id: 1, name: 'Biology Basics', icon: 'science', unlocked: true, color: colors.science },
-    { id: 2, name: 'Physics Pro', icon: 'bolt', unlocked: true, color: colors.primary },
-    { id: 3, name: 'Chemistry Champion', icon: 'biotech', unlocked: true, color: colors.technology },
+    { id: 1, name: 'Biology Basics', icon: 'science', unlocked: false, color: colors.science },
+    { id: 2, name: 'Physics Pro', icon: 'bolt', unlocked: false, color: colors.primary },
+    { id: 3, name: 'Chemistry Champion', icon: 'biotech', unlocked: false, color: colors.technology },
     { id: 4, name: 'Earth Explorer', icon: 'public', unlocked: false, color: colors.textSecondary },
     { id: 5, name: 'Math Master', icon: 'calculate', unlocked: false, color: colors.textSecondary },
     { id: 6, name: 'Space Cadet', icon: 'rocket-launch', unlocked: false, color: colors.textSecondary },
@@ -57,10 +57,10 @@ export default function ProfileScreen() {
   // Sample streak data (replace with actual data)
   const streakData = [
     { day: 'Mon', completed: true },
-    { day: 'Tue', completed: true },
-    { day: 'Wed', completed: true },
-    { day: 'Thu', completed: true },
-    { day: 'Fri', completed: true },
+    { day: 'Tue', completed: false },
+    { day: 'Wed', completed: false },
+    { day: 'Thu', completed: false },
+    { day: 'Fri', completed: false },
     { day: 'Sat', completed: false },
     { day: 'Sun', completed: false },
   ];

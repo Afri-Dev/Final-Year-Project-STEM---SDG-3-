@@ -107,7 +107,7 @@ export default function LeaderboardScreen() {
     return (
       <View style={styles.podiumContainer}>
         <Text style={[styles.sectionTitle, { color: colors.text }]}>
-          🏆 Top Champions
+          🏆 Top Champions 🏆
         </Text>
         <View style={styles.podium}>
           {podiumOrder.map((entry, index) => {
@@ -158,7 +158,7 @@ export default function LeaderboardScreen() {
     return (
       <View style={styles.listContainer}>
         <Text style={[styles.sectionTitle, { color: colors.text }]}>
-          📊 All Rankings
+          All Rankings
         </Text>
         
         {restOfList.map((entry, index) => {
