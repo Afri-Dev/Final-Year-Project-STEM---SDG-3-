@@ -436,7 +436,7 @@ export default function WelcomeScreen() {
           <View style={styles.logoCircle}>
             <MaterialIcons name="science" size={56} color="#ffffff" />
           </View>
-          <Text style={styles.logoText}>STEMtastic</Text>
+          <Text style={styles.logoText}>ZED STEM</Text>
           <Text style={styles.tagline}>Learn. Explore. Innovate.</Text>
         </View>
       </LinearGradient>
@@ -692,7 +692,7 @@ export default function WelcomeScreen() {
               ]}
             >
               <Text style={[styles.formTitle, { color: colors.text }]}>
-                Join STEMtastic!
+                Join ZED STEM Today!
               </Text>
               <Text
                 style={[styles.formSubtitle, { color: colors.textSecondary }]}
