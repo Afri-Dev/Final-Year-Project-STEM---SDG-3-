@@ -178,6 +178,37 @@ export default function ProfileScreen() {
           </View>
         </View>
 
+
+                {/* Streak Section */}
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Streak</Text>
+          <View style={[styles.streakCard, { backgroundColor: colors.surface }, Shadows.sm]}>
+            <View style={styles.streakDays}>
+              {streakData.map((day, index) => (
+                <View key={index} style={styles.streakDay}>
+                  <Text style={[styles.streakDayLabel, { color: colors.textSecondary }]}>
+                    {day.day}
+                  </Text>
+                  <View
+                    style={[
+                      styles.streakDayCircle,
+                      {
+                        backgroundColor: day.completed
+                          ? colors.primary
+                          : colors.disabled,
+                      },
+                    ]}
+                  >
+                    {day.completed && (
+                      <MaterialIcons name="check" size={16} color="#ffffff" />
+                    )}
+                  </View>
+                </View>
+              ))}
+            </View>
+          </View>
+        </View>
+        
         {/* Badges Section */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: colors.text }]}>Badges</Text>
@@ -216,35 +247,7 @@ export default function ProfileScreen() {
           </View>
         </View>
 
-        {/* Streak Section */}
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>Streak</Text>
-          <View style={[styles.streakCard, { backgroundColor: colors.surface }, Shadows.sm]}>
-            <View style={styles.streakDays}>
-              {streakData.map((day, index) => (
-                <View key={index} style={styles.streakDay}>
-                  <Text style={[styles.streakDayLabel, { color: colors.textSecondary }]}>
-                    {day.day}
-                  </Text>
-                  <View
-                    style={[
-                      styles.streakDayCircle,
-                      {
-                        backgroundColor: day.completed
-                          ? colors.primary
-                          : colors.disabled,
-                      },
-                    ]}
-                  >
-                    {day.completed && (
-                      <MaterialIcons name="check" size={16} color="#ffffff" />
-                    )}
-                  </View>
-                </View>
-              ))}
-            </View>
-          </View>
-        </View>
+
 
         {/* Settings Section */}
         <View style={styles.section}>
