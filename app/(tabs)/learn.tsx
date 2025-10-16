@@ -67,6 +67,7 @@ export default function LearnScreen() {
                 borderColor: color,
                 borderWidth: strokeWidth,
                 transform: [{ rotate: '-90deg' }],
+                borderStyle: 'solid',
               },
             ]}
           />
@@ -84,6 +85,9 @@ export default function LearnScreen() {
       <View style={[styles.header, { backgroundColor: colors.background }]}>
         <Text style={[styles.headerTitle, { color: colors.text }]}>
           Let's learn something new today!
+        </Text>
+        <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>
+          Choose a subject to start your learning journey
         </Text>
       </View>
 
@@ -159,11 +163,16 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: Spacing.lg,
     paddingTop: Spacing.xl + 20,
-    paddingBottom: Spacing.md,
+    paddingBottom: Spacing.lg,
   },
   headerTitle: {
     fontSize: Typography.fontSize['2xl'],
     fontWeight: Typography.fontWeight.bold,
+    marginBottom: 4,
+  },
+  headerSubtitle: {
+    fontSize: Typography.fontSize.base,
+    lineHeight: Typography.fontSize.base * Typography.lineHeight.normal,
   },
   scrollView: {
     flex: 1,
@@ -203,6 +212,7 @@ const styles = StyleSheet.create({
   subjectDescription: {
     fontSize: Typography.fontSize.sm,
     lineHeight: Typography.fontSize.sm * Typography.lineHeight.normal,
+    color: Colors.light.textSecondary,
   },
   progressCircleContainer: {
     position: 'relative',
@@ -228,7 +238,6 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 32,
-    borderStyle: 'solid',
   },
   progressPercentage: {
     position: 'absolute',
