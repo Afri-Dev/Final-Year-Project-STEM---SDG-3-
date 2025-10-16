@@ -450,3 +450,5 @@ For issues and questions:
 ---
 
 **Built with ❤️ for STEM education in Zambia**
+
+add a language button in the settings too and add a page for it with radio selection of the languages: Bemba, Nyanja

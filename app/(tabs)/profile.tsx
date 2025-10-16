@@ -73,7 +73,7 @@ export default function ProfileScreen() {
           <MaterialIcons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={[styles.headerTitle, { color: colors.text }]}>Profile</Text>
-        <TouchableOpacity onPress={() => {/* Open settings */}}>
+        <TouchableOpacity onPress={() => router.push('/settings')}>
           <MaterialIcons name="settings" size={24} color={colors.text} />
         </TouchableOpacity>
       </View>
