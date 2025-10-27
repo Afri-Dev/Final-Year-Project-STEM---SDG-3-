@@ -167,14 +167,23 @@ export default function SubjectDetailScreen() {
           <Text style={[styles.sectionTitle, { color: colors.text }]}>
             Core Subjects
           </Text>
-          <View style={styles.coreSubjectsList}>
+          <View style={styles.coreSubjectsGrid}>
             {subjectDetails.coreSubjects.map((coreSubject: string, index: number) => (
-              <View key={index} style={styles.coreSubjectItem}>
-                <MaterialIcons name="circle" size={8} color={subjectColor} style={styles.bullet} />
-                <Text style={[styles.coreSubjectText, { color: colors.text }]}>
+              <TouchableOpacity 
+                key={index} 
+                style={[styles.coreSubjectCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
+                onPress={() => {
+                  // TODO: Navigate to topic selection for this core subject
+                  console.log('Selected core subject:', coreSubject);
+                }}
+              >
+                <View style={[styles.coreSubjectIcon, { backgroundColor: `${subjectColor}20` }]}>
+                  <MaterialIcons name="book" size={20} color={subjectColor} />
+                </View>
+                <Text style={[styles.coreSubjectText, { color: colors.text }]} numberOfLines={2}>
                   {coreSubject}
                 </Text>
-              </View>
+              </TouchableOpacity>
             ))}
           </View>
         </View>
@@ -236,20 +245,31 @@ const styles = StyleSheet.create({
     fontSize: Typography.fontSize.base,
     lineHeight: Typography.fontSize.base * Typography.lineHeight.relaxed,
   },
-  coreSubjectsList: {
+  coreSubjectsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: Spacing.sm,
   },
-  coreSubjectItem: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
+  coreSubjectCard: {
+    width: '48%', // Two cards per row with some gap
+    padding: Spacing.md,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 100,
   },
-  bullet: {
-    marginTop: 6,
-    marginRight: Spacing.sm,
+  coreSubjectIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: Spacing.sm,
   },
   coreSubjectText: {
-    flex: 1,
-    fontSize: Typography.fontSize.base,
-    lineHeight: Typography.fontSize.base * Typography.lineHeight.relaxed,
+    fontSize: Typography.fontSize.sm,
+    fontWeight: Typography.fontWeight.medium,
+    textAlign: 'center',
   },
 });
