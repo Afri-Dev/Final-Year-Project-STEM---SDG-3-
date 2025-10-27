@@ -847,15 +847,18 @@ class DatabaseService {
   async updateLeaderboard(): Promise<void> {
     if (!this.db) throw new Error('Database not initialized');
 
+    // Clear existing leaderboard
     await this.db.execAsync('DELETE FROM leaderboard');
 
+    // Get all users ordered by XP
     const users = await this.db.getAllAsync<User>('SELECT * FROM users ORDER BY xp DESC');
 
+    // Insert users into leaderboard with proper unique IDs
     let rank = 1;
     for (const user of users) {
       const id = `leaderboard-${user.id}`;
       await this.db.runAsync(
-        'INSERT INTO leaderboard (id, userId, userName, avatarId, totalXp, level, rank, weeklyXp) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+        'INSERT OR REPLACE INTO leaderboard (id, userId, userName, avatarId, totalXp, level, rank, weeklyXp) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
         [id, user.id, user.name, user.avatarId, user.xp, user.level, rank, 0]
       );
       rank++;

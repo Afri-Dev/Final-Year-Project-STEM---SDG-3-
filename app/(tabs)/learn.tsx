@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   RefreshControl,
+  Animated,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -21,6 +22,7 @@ export default function LearnScreen() {
   const colors = getColorScheme(theme === 'dark', user?.gender);
 
   const [refreshing, setRefreshing] = React.useState(false);
+  const scaleValue = React.useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     loadSubjects();
@@ -30,6 +32,24 @@ export default function LearnScreen() {
     setRefreshing(true);
     await loadSubjects();
     setRefreshing(false);
+  };
+
+  const handleSubjectPress = (subjectCategory: string) => {
+    // Add a subtle animation when pressing a subject
+    Animated.sequence([
+      Animated.timing(scaleValue, {
+        toValue: 0.95,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(scaleValue, {
+        toValue: 1,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      router.push(`/subject/${subjectCategory}`);
+    });
   };
 
   const getSubjectProgress = (subjectId: string) => {
@@ -46,7 +66,7 @@ export default function LearnScreen() {
 
   const renderProgressCircle = (percentage: number, color: string) => {
     const radius = 28;
-    const strokeWidth = 3;
+    const strokeWidth = 4;
     const normalizedRadius = radius - strokeWidth * 2;
     const circumference = normalizedRadius * 2 * Math.PI;
     const strokeDashoffset = circumference - (percentage / 100) * circumference;
@@ -105,33 +125,41 @@ export default function LearnScreen() {
       >
         {/* Subject Cards */}
         <View style={styles.subjectsContainer}>
-          {subjects.map((subject) => {
+          {subjects.map((subject, index) => {
             const config = SUBJECT_CONFIG[subject.category];
             const subjectColor = theme === 'dark' ? config.darkColor : config.color;
             const progressPercentage = getSubjectProgress(subject.id);
 
             return (
-              <TouchableOpacity
+              <Animated.View
                 key={subject.id}
-                style={[styles.subjectCard, { backgroundColor: colors.surface }, Shadows.sm]}
-                onPress={() => router.push(`/subject/${subject.category}`)}
-                activeOpacity={0.7}
+                style={[
+                  styles.subjectCardContainer,
+                  { transform: [{ scale: scaleValue }] }
+                ]}
               >
-                <View style={styles.subjectContent}>
-                  <View
-                    style={[
-                      styles.subjectIcon,
-                      { backgroundColor: `${subjectColor}20` },
-                    ]}
-                  >
-                    <MaterialIcons
-                      name={subject.icon as any}
-                      size={32}
-                      color={subjectColor}
-                    />
+                <TouchableOpacity
+                  style={[styles.subjectCard, { backgroundColor: colors.surface }, Shadows.md]}
+                  onPress={() => handleSubjectPress(subject.category)}
+                  activeOpacity={0.8}
+                >
+                  <View style={styles.subjectHeader}>
+                    <View
+                      style={[
+                        styles.subjectIcon,
+                        { backgroundColor: `${subjectColor}20` },
+                      ]}
+                    >
+                      <MaterialIcons
+                        name={subject.icon as any}
+                        size={32}
+                        color={subjectColor}
+                      />
+                    </View>
+                    {renderProgressCircle(progressPercentage, subjectColor)}
                   </View>
 
-                  <View style={styles.subjectInfo}>
+                  <View style={styles.subjectContent}>
                     <Text style={[styles.subjectName, { color: colors.text }]}>
                       {subject.name}
                     </Text>
@@ -141,11 +169,19 @@ export default function LearnScreen() {
                     >
                       {subject.description}
                     </Text>
+                    
+                    <View style={styles.subjectFooter}>
+                      <View style={[styles.topicCount, { backgroundColor: `${subjectColor}20` }]}>
+                        <MaterialIcons name="topic" size={16} color={subjectColor} />
+                        <Text style={[styles.topicCountText, { color: subjectColor }]}>
+                          {subject.totalTopics} topics
+                        </Text>
+                      </View>
+                      <MaterialIcons name="arrow-forward" size={20} color={colors.textSecondary} />
+                    </View>
                   </View>
-
-                  {renderProgressCircle(progressPercentage, subjectColor)}
-                </View>
-              </TouchableOpacity>
+                </TouchableOpacity>
+              </Animated.View>
             );
           })}
         </View>
@@ -184,13 +220,20 @@ const styles = StyleSheet.create({
     gap: Spacing.lg,
     marginBottom: Spacing.lg,
   },
+  subjectCardContainer: {
+    borderRadius: BorderRadius.xl,
+    overflow: 'hidden',
+  },
   subjectCard: {
     borderRadius: BorderRadius.xl,
-    padding: Spacing.lg,
+    overflow: 'hidden',
   },
-  subjectContent: {
+  subjectHeader: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
+    padding: Spacing.lg,
+    backgroundColor: 'rgba(0,0,0,0.02)',
   },
   subjectIcon: {
     width: 64,
@@ -198,21 +241,37 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.lg,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: Spacing.md,
   },
-  subjectInfo: {
-    flex: 1,
-    justifyContent: 'center',
+  subjectContent: {
+    padding: Spacing.lg,
+    paddingTop: 0,
   },
   subjectName: {
-    fontSize: Typography.fontSize.lg,
+    fontSize: Typography.fontSize.xl,
     fontWeight: Typography.fontWeight.bold,
-    marginBottom: 4,
+    marginBottom: Spacing.xs,
   },
   subjectDescription: {
+    fontSize: Typography.fontSize.base,
+    lineHeight: Typography.fontSize.base * Typography.lineHeight.normal,
+    marginBottom: Spacing.md,
+  },
+  subjectFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  topicCount: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
+    borderRadius: BorderRadius.full,
+    gap: Spacing.xs,
+  },
+  topicCountText: {
     fontSize: Typography.fontSize.sm,
-    lineHeight: Typography.fontSize.sm * Typography.lineHeight.normal,
-    color: Colors.light.textSecondary,
+    fontWeight: Typography.fontWeight.medium,
   },
   progressCircleContainer: {
     position: 'relative',
@@ -231,7 +290,7 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 32,
-    borderWidth: 3,
+    borderWidth: 4,
   },
   progressCircleFill: {
     position: 'absolute',
