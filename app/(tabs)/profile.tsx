@@ -1,9 +1,3 @@
-/**
- * Profile Screen
- * User profile with stats, badges, streak calendar, and settings
- * Based on: assets/PHOTOS/user_profile_summary/code.html
- */
-
 import React, { useEffect } from 'react';
 import {
   View,
@@ -17,6 +11,7 @@ import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useAuthStore, useThemeStore } from '../../services/store';
 import { Colors, Typography, Spacing, BorderRadius, Shadows, getLevelInfo, getColorScheme } from '../../constants/theme';
+import database from '../../services/database';
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -26,14 +21,44 @@ export default function ProfileScreen() {
   const colors = getColorScheme(theme === 'dark', user?.gender);
 
   const [refreshing, setRefreshing] = React.useState(false);
+  const [streakData, setStreakData] = React.useState<{ day: string; date: string; completed: boolean }[]>([]);
 
   useEffect(() => {
     refreshUser();
+    loadStreakData();
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      loadStreakData();
+    }
+  }, [user]);
+
+  const loadStreakData = async () => {
+    if (!user) return;
+    
+    try {
+      const data = await database.getWeeklyStreakData(user.id);
+      setStreakData(data);
+    } catch (error) {
+      console.error('Failed to load streak data:', error);
+      // Fallback to sample data if there's an error
+      setStreakData([
+        { day: 'Mon', date: '', completed: false },
+        { day: 'Tue', date: '', completed: false },
+        { day: 'Wed', date: '', completed: false },
+        { day: 'Thu', date: '', completed: false },
+        { day: 'Fri', date: '', completed: false },
+        { day: 'Sat', date: '', completed: false },
+        { day: 'Sun', date: '', completed: false },
+      ]);
+    }
+  };
 
   const onRefresh = async () => {
     setRefreshing(true);
     await refreshUser();
+    await loadStreakData();
     setRefreshing(false);
   };
 
@@ -42,7 +67,6 @@ export default function ProfileScreen() {
   }
 
   const levelInfo = getLevelInfo(user.xp);
-  const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
   // Sample badges (replace with actual data from database)
   const sampleBadges = [
@@ -52,17 +76,6 @@ export default function ProfileScreen() {
     { id: 4, name: 'Earth Explorer', icon: 'public', unlocked: false, color: colors.textSecondary },
     { id: 5, name: 'Math Master', icon: 'calculate', unlocked: false, color: colors.textSecondary },
     { id: 6, name: 'Space Cadet', icon: 'rocket-launch', unlocked: false, color: colors.textSecondary },
-  ];
-
-  // Sample streak data (replace with actual data)
-  const streakData = [
-    { day: 'Mon', completed: true },
-    { day: 'Tue', completed: false },
-    { day: 'Wed', completed: false },
-    { day: 'Thu', completed: false },
-    { day: 'Fri', completed: false },
-    { day: 'Sat', completed: false },
-    { day: 'Sun', completed: false },
   ];
 
   return (
@@ -178,8 +191,7 @@ export default function ProfileScreen() {
           </View>
         </View>
 
-
-                {/* Streak Section */}
+        {/* Streak Section */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: colors.text }]}>Streak</Text>
           <View style={[styles.streakCard, { backgroundColor: colors.surface }, Shadows.sm]}>
@@ -246,8 +258,6 @@ export default function ProfileScreen() {
             ))}
           </View>
         </View>
-
-
 
         {/* Settings Section */}
         <View style={styles.section}>

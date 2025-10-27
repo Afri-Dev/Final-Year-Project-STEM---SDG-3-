@@ -88,6 +88,9 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
           lastActive: new Date().toISOString(),
         });
 
+        // Check and update streak
+        await database.updateStreak(user.id);
+
         // Get updated user data
         const updatedUser = await database.getUser(user.id);
         set({ user: updatedUser, isAuthenticated: true });
@@ -108,6 +111,9 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
       // Create user in database with password
       const user = await database.createUser(userData, password);
+
+      // Check and update streak for new user
+      await database.updateStreak(user.id);
 
       set({ user, isAuthenticated: true });
     } catch (error: any) {

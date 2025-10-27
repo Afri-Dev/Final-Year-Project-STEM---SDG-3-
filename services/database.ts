@@ -810,27 +810,108 @@ class DatabaseService {
   async updateStreak(userId: string): Promise<void> {
     if (!this.db) throw new Error('Database not initialized');
 
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Normalize to start of day
+    const todayStr = today.toISOString().split('T')[0];
+    
+    // Check if user already has a streak entry for today
     const existing = await this.db.getFirstAsync<Streak>(
       'SELECT * FROM streaks WHERE userId = ? AND date = ?',
-      [userId, today]
+      [userId, todayStr]
     );
 
-    if (!existing) {
-      const id = `streak-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-      await this.db.runAsync(
-        'INSERT INTO streaks (id, userId, date, completed, xpEarned) VALUES (?, ?, ?, ?, ?)',
-        [id, userId, today, 1, 25]
-      );
-
-      const user = await this.getUser(userId);
-      if (user) {
-        const newStreak = user.currentStreak + 1;
-        const longestStreak = Math.max(newStreak, user.longestStreak);
-        await this.updateUser(userId, { currentStreak: newStreak, longestStreak });
-        await this.addXP(userId, 25);
-      }
+    // If user already logged in today, no need to update
+    if (existing) {
+      return;
     }
+
+    // Check if user logged in yesterday to maintain streak
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+    yesterday.setHours(0, 0, 0, 0);
+    const yesterdayStr = yesterday.toISOString().split('T')[0];
+    
+    const yesterdayStreak = await this.db.getFirstAsync<Streak>(
+      'SELECT * FROM streaks WHERE userId = ? AND date = ?',
+      [userId, yesterdayStr]
+    );
+
+    // Get current user data
+    const user = await this.getUser(userId);
+    if (!user) return;
+
+    // Create new streak entry for today
+    const id = `streak-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    
+    // If user logged in yesterday or this is their first login, continue streak
+    // Otherwise, reset streak to 1
+    const newStreak = yesterdayStreak ? user.currentStreak + 1 : 1;
+    const longestStreak = Math.max(newStreak, user.longestStreak);
+    
+    // Insert today's streak entry
+    await this.db.runAsync(
+      'INSERT INTO streaks (id, userId, date, completed, xpEarned) VALUES (?, ?, ?, ?, ?)',
+      [id, userId, todayStr, 1, 25]
+    );
+
+    // Update user streak data
+    await this.updateUser(userId, { 
+      currentStreak: newStreak, 
+      longestStreak 
+    });
+    
+    // Add XP for streak
+    await this.addXP(userId, 25);
+  }
+
+  /**
+   * Get streak data for the current week
+   * Returns an array of 7 days with completion status
+   */
+  async getWeeklyStreakData(userId: string): Promise<{ day: string; date: string; completed: boolean }[]> {
+    if (!this.db) throw new Error('Database not initialized');
+
+    // Get the start of the current week (Monday)
+    const today = new Date();
+    const dayOfWeek = today.getDay(); // 0 (Sunday) to 6 (Saturday)
+    const daysSinceMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Adjust for Monday as start of week
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - daysSinceMonday);
+    startOfWeek.setHours(0, 0, 0, 0);
+
+    const streakData = [];
+    const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+    // Get all streak records for the current week
+    const streakRecords = await this.db.getAllAsync<Streak>(
+      `SELECT * FROM streaks WHERE userId = ? AND date >= ? AND date <= ?`,
+      [
+        userId,
+        startOfWeek.toISOString().split('T')[0],
+        new Date(startOfWeek.getTime() + 6 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+      ]
+    );
+
+    // Create a map of completed dates for quick lookup
+    const completedDates = new Map<string, boolean>();
+    streakRecords.forEach(record => {
+      completedDates.set(record.date, true);
+    });
+
+    // Generate data for each day of the week
+    for (let i = 0; i < 7; i++) {
+      const currentDate = new Date(startOfWeek);
+      currentDate.setDate(startOfWeek.getDate() + i);
+      const dateStr = currentDate.toISOString().split('T')[0];
+      
+      streakData.push({
+        day: weekDays[i],
+        date: dateStr,
+        completed: completedDates.has(dateStr) || false
+      });
+    }
+
+    return streakData;
   }
 
   // ==================== BADGE METHODS ====================

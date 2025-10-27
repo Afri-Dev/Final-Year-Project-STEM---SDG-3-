@@ -185,7 +185,7 @@ User profile management and personal statistics.
 - User avatar with edit functionality
 - Level information and progress tracking
 - Stats cards for XP, badges, and streaks
-- Streak calendar showing daily activity
+- Streak calendar showing daily activity with accurate day tracking
 - Badges collection display
 - Settings navigation
 
@@ -195,6 +195,18 @@ User profile management and personal statistics.
 - Detailed statistics tracking
 - Badge showcase with unlock status
 - Direct navigation to settings
+- **Accurate streak visualization** showing completed days of the current week
+- **Real-time streak data** fetched from the database
+- **Pull-to-refresh** functionality to update streak information
+
+**Streak Visualization:**
+The profile page displays a visual calendar showing the user's login activity for the current week. Each day is represented with:
+- Day abbreviation (Mon, Tue, Wed, etc.)
+- Circular indicator that is colored when the user logged in on that day
+- Checkmark icon for completed days
+- Disabled appearance for days when the user did not log in
+
+The streak calculation accurately tracks consecutive login days and updates the user's current and longest streak values accordingly.
 
 ### Settings Screen (`app/settings.tsx`)
 Application configuration and user preferences.
@@ -277,7 +289,9 @@ The gamification system motivates learning through rewards and recognition.
 **Streak Tracking:**
 - Daily login rewards with XP bonuses
 - Weekly streak bonuses for consistent engagement
-- Visual calendar display in profile
+- Visual calendar display in profile showing completed days
+- Accurate tracking of consecutive login days
+- Proper streak calculation that maintains continuity or resets appropriately
 
 ### Content Management
 The app organizes educational content in a hierarchical structure.
@@ -489,7 +503,7 @@ CREATE TABLE IF NOT EXISTS user_progress (
 ```
 
 #### Streaks Table
-Records daily streak information.
+Records daily streak information for accurate tracking of consecutive login days.
 ```sql
 CREATE TABLE IF NOT EXISTS streaks (
   id TEXT PRIMARY KEY,
@@ -500,6 +514,20 @@ CREATE TABLE IF NOT EXISTS streaks (
   FOREIGN KEY (userId) REFERENCES users(id)
 );
 ```
+
+The streaks table tracks:
+- **id**: Unique identifier for each streak entry
+- **userId**: Reference to the user who logged in
+- **date**: The date when the user logged in (ISO format)
+- **completed**: Whether the user logged in on this date (1 = completed, 0 = not completed)
+- **xpEarned**: XP reward earned for logging in on this date
+
+Streak functionality features:
+- Accurate tracking of consecutive login days
+- Proper streak calculation that maintains continuity or resets when days are missed
+- Weekly visualization in the profile page showing completed days
+- XP rewards for daily logins (25 XP per day)
+- Automatic streak updates on user login/initialization
 
 #### Leaderboard Table
 Maintains user rankings based on XP.
@@ -616,18 +644,15 @@ async getQuizAttempt(attemptId: string): Promise<QuizAttempt | null>
 ```
 
 #### Progress Management
-```typescript
-// Update user progress
-async updateProgress(userId: string, subjectId: string, topicId: string, percentage: number): Promise<void>
-
-// Get user progress
-async getProgress(userId: string): Promise<UserProgress[]>
 ```
 
 #### Streak Management
 ```typescript
 // Update user streak
 async updateStreak(userId: string): Promise<void>
+
+// Get weekly streak data
+async getWeeklyStreakData(userId: string): Promise<{ day: string; date: string; completed: boolean }[]>
 ```
 
 #### Badge Management
@@ -773,7 +798,7 @@ getCurrentQuestion: () => Question | null
 ### Setup Process
 
 #### 1. Clone the Repository
-```bash
+```
 git clone <repository-url>
 cd stem_learning_app
 ```
