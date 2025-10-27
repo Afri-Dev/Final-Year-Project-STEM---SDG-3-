@@ -728,6 +728,19 @@ class DatabaseService {
     }));
   }
 
+  async getQuizAttempt(attemptId: string): Promise<QuizAttempt | null> {
+    if (!this.db) throw new Error('Database not initialized');
+    
+    const attempt = await this.db.getFirstAsync<any>('SELECT * FROM quiz_attempts WHERE id = ?', [attemptId]);
+    
+    if (!attempt) return null;
+    
+    return {
+      ...attempt,
+      answers: JSON.parse(attempt.answers),
+    };
+  }
+
   // ==================== PROGRESS METHODS ====================
 
   async updateProgress(userId: string, subjectId: string, topicId: string, percentage: number): Promise<void> {
