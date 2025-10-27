@@ -198,15 +198,17 @@ User profile management and personal statistics.
 - **Accurate streak visualization** showing completed days of the current week
 - **Real-time streak data** fetched from the database
 - **Pull-to-refresh** functionality to update streak information
+- **Visual checkmark indicators** showing which days the user was active for at least 3 consecutive minutes
 
 **Streak Visualization:**
 The profile page displays a visual calendar showing the user's login activity for the current week. Each day is represented with:
 - Day abbreviation (Mon, Tue, Wed, etc.)
 - Circular indicator that is colored when the user logged in on that day
 - Checkmark icon for completed days
-- Disabled appearance for days when the user did not log in
+- **Small green checkmark in the bottom-right corner** indicating the user was active for at least 3 consecutive minutes
+- **Legend explaining the visual indicators**
 
-The streak calculation accurately tracks consecutive login days and updates the user's current and longest streak values accordingly.
+The streak calculation accurately tracks consecutive login days and updates the user's current and longest streak values accordingly, ensuring the streak only increments once per calendar day regardless of login frequency.
 
 ### Settings Screen (`app/settings.tsx`)
 Application configuration and user preferences.
@@ -287,11 +289,13 @@ The gamification system motivates learning through rewards and recognition.
 - Visual display in user profile
 
 **Streak Tracking:**
-- Daily login rewards with XP bonuses
+- Daily login rewards with XP bonuses (25 XP per day)
 - Weekly streak bonuses for consistent engagement
 - Visual calendar display in profile showing completed days
 - Accurate tracking of consecutive login days
 - Proper streak calculation that maintains continuity or resets appropriately
+- **Only increments once per calendar day**, regardless of login frequency
+- **Visual checkmark indicators** showing which days the user was active for at least 3 consecutive minutes
 
 ### Content Management
 The app organizes educational content in a hierarchical structure.
@@ -520,14 +524,16 @@ The streaks table tracks:
 - **userId**: Reference to the user who logged in
 - **date**: The date when the user logged in (ISO format)
 - **completed**: Whether the user logged in on this date (1 = completed, 0 = not completed)
-- **xpEarned**: XP reward earned for logging in on this date
+- **xpEarned**: Repurposed to track if user was active for 3+ minutes (0 = not active, 1 = active for 3+ minutes)
 
 Streak functionality features:
-- Accurate tracking of consecutive login days
+- Accurate tracking of consecutive login days (only increments once per calendar day)
 - Proper streak calculation that maintains continuity or resets when days are missed
 - Weekly visualization in the profile page showing completed days
 - XP rewards for daily logins (25 XP per day)
+- Visual indicators for users active for at least 3 consecutive minutes
 - Automatic streak updates on user login/initialization
+- Session duration tracking to determine if user was active for 3+ minutes
 
 #### Leaderboard Table
 Maintains user rankings based on XP.
@@ -648,11 +654,14 @@ async getQuizAttempt(attemptId: string): Promise<QuizAttempt | null>
 
 #### Streak Management
 ```typescript
-// Update user streak
+// Update user streak (once per day)
 async updateStreak(userId: string): Promise<void>
 
-// Get weekly streak data
-async getWeeklyStreakData(userId: string): Promise<{ day: string; date: string; completed: boolean }[]>
+// Update streak duration tracking
+async updateStreakDuration(userId: string, date: string, durationSeconds: number): Promise<void>
+
+// Get weekly streak data with activity duration
+async getWeeklyStreakData(userId: string): Promise<{ day: string; date: string; completed: boolean; wasActiveForThreeMinutes: boolean }[]>
 ```
 
 #### Badge Management
@@ -1012,7 +1021,7 @@ eas build --platform android --local
 
 #### Development Build
 For development builds, you can use:
-```bash
+```
 npx expo run:android
 ```
 

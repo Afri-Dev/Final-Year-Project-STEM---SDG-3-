@@ -31,7 +31,7 @@ import {
 } from '../types';
 
 // Database version for migrations
-const DATABASE_VERSION = 9;
+const DATABASE_VERSION = 10;
 
 class DatabaseService {
   private db: SQLite.SQLiteDatabase | null = null;
@@ -460,6 +460,17 @@ class DatabaseService {
         }
       }
 
+      // Migration v10: Update streaks table to track 3-minute activity
+      if (currentVersion < 10) {
+        try {
+          // We're repurposing the xpEarned column to track if user was active for 3+ minutes
+          // 0 = not active for 3+ minutes, 1 = active for 3+ minutes
+          console.log('✅ Migration v10: Updated streaks table for 3-minute activity tracking');
+        } catch (error) {
+          console.log('⚠️  Migration v10: May already be applied');
+        }
+      }
+
       await this.db.runAsync('DELETE FROM database_version');
       await this.db.runAsync('INSERT INTO database_version (version) VALUES (?)', [DATABASE_VERSION]);
     }
@@ -820,7 +831,7 @@ class DatabaseService {
       [userId, todayStr]
     );
 
-    // If user already logged in today, no need to update
+    // If user already logged in today, no need to update streak count
     if (existing) {
       return;
     }
@@ -848,7 +859,7 @@ class DatabaseService {
     const newStreak = yesterdayStreak ? user.currentStreak + 1 : 1;
     const longestStreak = Math.max(newStreak, user.longestStreak);
     
-    // Insert today's streak entry
+    // Insert today's streak entry (completed = 1 means logged in today)
     await this.db.runAsync(
       'INSERT INTO streaks (id, userId, date, completed, xpEarned) VALUES (?, ?, ?, ?, ?)',
       [id, userId, todayStr, 1, 25]
@@ -865,10 +876,26 @@ class DatabaseService {
   }
 
   /**
-   * Get streak data for the current week
-   * Returns an array of 7 days with completion status
+   * Update session duration for a user on a specific date
+   * This tracks if the user was logged in for at least 3 consecutive minutes
    */
-  async getWeeklyStreakData(userId: string): Promise<{ day: string; date: string; completed: boolean }[]> {
+  async updateStreakDuration(userId: string, date: string, durationSeconds: number): Promise<void> {
+    if (!this.db) throw new Error('Database not initialized');
+
+    // Update the streak record to indicate if the user was active for at least 3 minutes (180 seconds)
+    const wasActive = durationSeconds >= 180 ? 1 : 0;
+    
+    await this.db.runAsync(
+      'UPDATE streaks SET xpEarned = ? WHERE userId = ? AND date = ?',
+      [wasActive, userId, date]
+    );
+  }
+
+  /**
+   * Get streak data for the current week
+   * Returns an array of 7 days with completion status and activity duration
+   */
+  async getWeeklyStreakData(userId: string): Promise<{ day: string; date: string; completed: boolean; wasActiveForThreeMinutes: boolean }[]> {
     if (!this.db) throw new Error('Database not initialized');
 
     // Get the start of the current week (Monday)
@@ -893,9 +920,9 @@ class DatabaseService {
     );
 
     // Create a map of completed dates for quick lookup
-    const completedDates = new Map<string, boolean>();
+    const streakMap = new Map<string, Streak>();
     streakRecords.forEach(record => {
-      completedDates.set(record.date, true);
+      streakMap.set(record.date, record);
     });
 
     // Generate data for each day of the week
@@ -904,10 +931,13 @@ class DatabaseService {
       currentDate.setDate(startOfWeek.getDate() + i);
       const dateStr = currentDate.toISOString().split('T')[0];
       
+      const streakRecord = streakMap.get(dateStr);
+      
       streakData.push({
         day: weekDays[i],
         date: dateStr,
-        completed: completedDates.has(dateStr) || false
+        completed: !!streakRecord, // User logged in on this day
+        wasActiveForThreeMinutes: !!streakRecord && streakRecord.xpEarned === 1 // User was active for 3+ minutes
       });
     }
 

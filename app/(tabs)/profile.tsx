@@ -21,7 +21,7 @@ export default function ProfileScreen() {
   const colors = getColorScheme(theme === 'dark', user?.gender);
 
   const [refreshing, setRefreshing] = React.useState(false);
-  const [streakData, setStreakData] = React.useState<{ day: string; date: string; completed: boolean }[]>([]);
+  const [streakData, setStreakData] = React.useState<{ day: string; date: string; completed: boolean; wasActiveForThreeMinutes: boolean }[]>([]);
 
   useEffect(() => {
     refreshUser();
@@ -44,13 +44,13 @@ export default function ProfileScreen() {
       console.error('Failed to load streak data:', error);
       // Fallback to sample data if there's an error
       setStreakData([
-        { day: 'Mon', date: '', completed: false },
-        { day: 'Tue', date: '', completed: false },
-        { day: 'Wed', date: '', completed: false },
-        { day: 'Thu', date: '', completed: false },
-        { day: 'Fri', date: '', completed: false },
-        { day: 'Sat', date: '', completed: false },
-        { day: 'Sun', date: '', completed: false },
+        { day: 'Mon', date: '', completed: false, wasActiveForThreeMinutes: false },
+        { day: 'Tue', date: '', completed: false, wasActiveForThreeMinutes: false },
+        { day: 'Wed', date: '', completed: false, wasActiveForThreeMinutes: false },
+        { day: 'Thu', date: '', completed: false, wasActiveForThreeMinutes: false },
+        { day: 'Fri', date: '', completed: false, wasActiveForThreeMinutes: false },
+        { day: 'Sat', date: '', completed: false, wasActiveForThreeMinutes: false },
+        { day: 'Sun', date: '', completed: false, wasActiveForThreeMinutes: false },
       ]);
     }
   };
@@ -215,8 +215,24 @@ export default function ProfileScreen() {
                       <MaterialIcons name="check" size={16} color="#ffffff" />
                     )}
                   </View>
+                  {/* Checkmark indicator for 3+ minutes of activity */}
+                  {day.wasActiveForThreeMinutes && (
+                    <View style={[styles.threeMinuteIndicator, { borderColor: colors.success }]}>
+                      <MaterialIcons name="check" size={12} color={colors.success} />
+                    </View>
+                  )}
                 </View>
               ))}
+            </View>
+            <View style={styles.streakLegend}>
+              <View style={styles.legendItem}>
+                <View style={[styles.legendColorBox, { backgroundColor: colors.primary }]} />
+                <Text style={[styles.legendText, { color: colors.textSecondary }]}>Logged in</Text>
+              </View>
+              <View style={styles.legendItem}>
+                <View style={[styles.legendColorBox, { backgroundColor: colors.success, borderWidth: 2, borderColor: colors.success }]} />
+                <Text style={[styles.legendText, { color: colors.textSecondary }]}>3+ min active</Text>
+              </View>
             </View>
           </View>
         </View>
@@ -477,10 +493,12 @@ const styles = StyleSheet.create({
   streakDays: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginBottom: Spacing.md,
   },
   streakDay: {
     alignItems: 'center',
     gap: Spacing.sm,
+    position: 'relative',
   },
   streakDayLabel: {
     fontSize: Typography.fontSize.xs,
@@ -491,6 +509,36 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  threeMinuteIndicator: {
+    position: 'absolute',
+    bottom: -5,
+    right: -5,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: '#ffffff',
+    borderWidth: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  streakLegend: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: Spacing.lg,
+  },
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+  },
+  legendColorBox: {
+    width: 16,
+    height: 16,
+    borderRadius: 4,
+  },
+  legendText: {
+    fontSize: Typography.fontSize.xs,
   },
   settingItem: {
     flexDirection: 'row',

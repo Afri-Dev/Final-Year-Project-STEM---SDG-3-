@@ -23,6 +23,7 @@ interface AuthStore {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  sessionStartTime: number | null;
   initialize: () => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
   register: (
@@ -42,12 +43,15 @@ interface AuthStore {
   logout: () => Promise<void>;
   updateUser: (updates: Partial<User>) => Promise<void>;
   refreshUser: () => Promise<void>;
+  startSession: () => void;
+  endSession: () => Promise<void>;
 }
 
 export const useAuthStore = create<AuthStore>((set, get) => ({
   user: null,
   isAuthenticated: false,
   isLoading: true,
+  sessionStartTime: null,
 
   initialize: async () => {
     try {
@@ -94,6 +98,9 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         // Get updated user data
         const updatedUser = await database.getUser(user.id);
         set({ user: updatedUser, isAuthenticated: true });
+        
+        // Start session tracking
+        set({ sessionStartTime: Date.now() });
       } else {
         throw new Error("Invalid email or password");
       }
@@ -115,7 +122,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       // Check and update streak for new user
       await database.updateStreak(user.id);
 
-      set({ user, isAuthenticated: true });
+      set({ user, isAuthenticated: true, sessionStartTime: Date.now() });
     } catch (error: any) {
       console.error("Registration failed:", error);
       
@@ -139,8 +146,16 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
   logout: async () => {
     try {
+      // End session and update streak duration before logout
+      const { sessionStartTime, user } = get();
+      if (sessionStartTime && user) {
+        const sessionDuration = Math.floor((Date.now() - sessionStartTime) / 1000);
+        const today = new Date().toISOString().split('T')[0];
+        await database.updateStreakDuration(user.id, today, sessionDuration);
+      }
+      
       await SecureStore.deleteItemAsync("current_user_id");
-      set({ user: null, isAuthenticated: false });
+      set({ user: null, isAuthenticated: false, sessionStartTime: null });
     } catch (error) {
       console.error("Logout failed:", error);
     }
@@ -169,6 +184,20 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       set({ user: updatedUser });
     } catch (error) {
       console.error("Failed to refresh user:", error);
+    }
+  },
+
+  startSession: () => {
+    set({ sessionStartTime: Date.now() });
+  },
+
+  endSession: async () => {
+    const { sessionStartTime, user } = get();
+    if (sessionStartTime && user) {
+      const sessionDuration = Math.floor((Date.now() - sessionStartTime) / 1000);
+      const today = new Date().toISOString().split('T')[0];
+      await database.updateStreakDuration(user.id, today, sessionDuration);
+      set({ sessionStartTime: null });
     }
   },
 }));
@@ -573,3 +602,6 @@ export const useAppStore = create<AppStore>((set) => ({
     set({ notificationCount: count });
   },
 }));
+
+// Add a listener for when the app goes to background/foreground to track session duration
+// This would typically be implemented in the app's root component or _layout.tsx

@@ -11,14 +11,17 @@ import { useAppStore, useAuthStore, useThemeStore } from '../services/store';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { Colors } from '../constants/theme';
 
+import { AppState } from 'react-native';
+
 // Prevent splash screen from auto-hiding
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [appReady, setAppReady] = useState(false);
   const { initialize: initializeApp, isInitialized } = useAppStore();
-  const { isAuthenticated, isLoading: authLoading } = useAuthStore();
+  const { isAuthenticated, isLoading: authLoading, startSession, endSession, user } = useAuthStore();
   const { theme } = useThemeStore();
+  const [appState, setAppState] = useState(AppState.currentState);
 
   useEffect(() => {
     async function prepare() {
@@ -44,6 +47,37 @@ export default function RootLayout() {
       SplashScreen.hideAsync();
     }
   }, [appReady, isInitialized, authLoading]);
+
+  // Session tracking
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      startSession();
+    }
+  }, [isAuthenticated, user]);
+
+  // Track app state changes for session duration
+  useEffect(() => {
+    const handleAppStateChange = (nextAppState: any) => {
+      if (appState.match(/inactive|background/) && nextAppState === 'active') {
+        // App has come to the foreground
+        if (isAuthenticated && user) {
+          startSession();
+        }
+      } else if (appState === 'active' && nextAppState.match(/inactive|background/)) {
+        // App is going to the background
+        if (isAuthenticated && user) {
+          endSession();
+        }
+      }
+      setAppState(nextAppState);
+    };
+
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+    
+    return () => {
+      subscription?.remove();
+    };
+  }, [appState, isAuthenticated, user]);
 
   if (!appReady || !isInitialized || authLoading) {
     const colors = theme === 'dark' ? Colors.dark : Colors.light;
@@ -95,6 +129,17 @@ export default function RootLayout() {
           name="notifications"
           options={{
             headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="subject/[category]"
+          options={{
+            headerShown: true,
+            title: 'Subject',
+            headerStyle: {
+              backgroundColor: theme === 'dark' ? Colors.dark.surface : Colors.light.surface,
+            },
+            headerTintColor: theme === 'dark' ? Colors.dark.text : Colors.light.text,
           }}
         />
         <Stack.Screen
