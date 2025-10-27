@@ -13,6 +13,73 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useLearningStore, useThemeStore, useAuthStore } from '../../services/store';
 import { Colors, Typography, Spacing, BorderRadius, Shadows, SUBJECT_CONFIG, getColorScheme } from '../../constants/theme';
 
+// Detailed subject information for core subjects count
+const SUBJECT_DETAILS: Record<string, { focus: string; coreSubjects: string[] }> = {
+  science: {
+    focus: 'Understanding natural phenomena through observation and experimentation.',
+    coreSubjects: [
+      'Physics',
+      'Chemistry',
+      'Biology',
+      'Environmental Science',
+      'Earth Science (Geology, Meteorology, Oceanography)',
+      'Astronomy',
+      'Anatomy and Physiology',
+      'Ecology',
+      'Forensic Science',
+      'Agricultural Science'
+    ]
+  },
+  technology: {
+    focus: 'Using scientific knowledge to create tools, systems, and digital solutions.',
+    coreSubjects: [
+      'Computer Science',
+      'Information and Communication Technology (ICT)',
+      'Software Engineering',
+      'Artificial Intelligence (AI)',
+      'Data Science',
+      'Robotics',
+      'Cybersecurity',
+      'Web and Mobile App Development',
+      'Game Design and Development',
+      'Digital Media and Animation',
+      'Networking and Cloud Computing'
+    ]
+  },
+  engineering: {
+    focus: 'Designing, building, and maintaining systems, structures, and machines.',
+    coreSubjects: [
+      'Mechanical Engineering',
+      'Civil Engineering',
+      'Electrical and Electronic Engineering',
+      'Computer Engineering',
+      'Chemical Engineering',
+      'Industrial and Systems Engineering',
+      'Mechatronics',
+      'Biomedical Engineering',
+      'Environmental Engineering',
+      'Aerospace Engineering',
+      'Structural Engineering'
+    ]
+  },
+  mathematics: {
+    focus: 'Abstract reasoning, logic, and quantitative analysis.',
+    coreSubjects: [
+      'Algebra',
+      'Geometry',
+      'Trigonometry',
+      'Calculus',
+      'Statistics and Probability',
+      'Discrete Mathematics',
+      'Linear Algebra',
+      'Mathematical Modeling',
+      'Applied Mathematics',
+      'Computational Mathematics',
+      'Operations Research'
+    ]
+  }
+};
+
 export default function LearnScreen() {
   const router = useRouter();
   const { subjects, loadSubjects } = useLearningStore();
@@ -22,7 +89,13 @@ export default function LearnScreen() {
   const colors = getColorScheme(theme === 'dark', user?.gender);
 
   const [refreshing, setRefreshing] = React.useState(false);
-  const scaleValue = React.useRef(new Animated.Value(1)).current;
+  // Create animated values for each subject
+  const animatedValues = React.useRef(
+    subjects.reduce((acc, subject) => {
+      acc[subject.id] = new Animated.Value(1);
+      return acc;
+    }, {} as Record<string, Animated.Value>)
+  ).current;
 
   useEffect(() => {
     loadSubjects();
@@ -34,15 +107,17 @@ export default function LearnScreen() {
     setRefreshing(false);
   };
 
-  const handleSubjectPress = (subjectCategory: string) => {
-    // Add a subtle animation when pressing a subject
+  const handleSubjectPress = (subjectId: string, subjectCategory: string) => {
+    // Animate only the clicked card
+    const animation = animatedValues[subjectId];
+    
     Animated.sequence([
-      Animated.timing(scaleValue, {
+      Animated.timing(animation, {
         toValue: 0.95,
         duration: 100,
         useNativeDriver: true,
       }),
-      Animated.timing(scaleValue, {
+      Animated.timing(animation, {
         toValue: 1,
         duration: 100,
         useNativeDriver: true,
@@ -62,6 +137,11 @@ export default function LearnScreen() {
       'math': 90,
     };
     return progressMap[subjectId] || 0;
+  };
+
+  const getCoreSubjectsCount = (category: string) => {
+    const subjectDetails = SUBJECT_DETAILS[category];
+    return subjectDetails ? subjectDetails.coreSubjects.length : 0;
   };
 
   const renderProgressCircle = (percentage: number, color: string) => {
@@ -125,22 +205,23 @@ export default function LearnScreen() {
       >
         {/* Subject Cards */}
         <View style={styles.subjectsContainer}>
-          {subjects.map((subject, index) => {
+          {subjects.map((subject) => {
             const config = SUBJECT_CONFIG[subject.category];
             const subjectColor = theme === 'dark' ? config.darkColor : config.color;
             const progressPercentage = getSubjectProgress(subject.id);
+            const coreSubjectsCount = getCoreSubjectsCount(subject.category);
 
             return (
               <Animated.View
                 key={subject.id}
                 style={[
                   styles.subjectCardContainer,
-                  { transform: [{ scale: scaleValue }] }
+                  { transform: [{ scale: animatedValues[subject.id] }] }
                 ]}
               >
                 <TouchableOpacity
                   style={[styles.subjectCard, { backgroundColor: colors.surface }, Shadows.md]}
-                  onPress={() => handleSubjectPress(subject.category)}
+                  onPress={() => handleSubjectPress(subject.id, subject.category)}
                   activeOpacity={0.8}
                 >
                   <View style={styles.subjectHeader}>
@@ -174,7 +255,7 @@ export default function LearnScreen() {
                       <View style={[styles.topicCount, { backgroundColor: `${subjectColor}20` }]}>
                         <MaterialIcons name="topic" size={16} color={subjectColor} />
                         <Text style={[styles.topicCountText, { color: subjectColor }]}>
-                          {subject.totalTopics} topics
+                          {coreSubjectsCount} topics
                         </Text>
                       </View>
                       <MaterialIcons name="arrow-forward" size={20} color={colors.textSecondary} />
