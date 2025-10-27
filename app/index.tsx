@@ -7,14 +7,15 @@ import React, { useEffect } from "react";
 import { View, Text, StyleSheet, Image, Animated } from "react-native";
 import { useRouter } from "expo-router";
 import { useAuthStore, useThemeStore } from "../services/store";
-import { Colors, Typography, Spacing } from "../constants/theme";
+import { Colors, Typography, Spacing, getColorScheme } from "../constants/theme";
 import { MaterialIcons } from "@expo/vector-icons";
 
 export default function SplashScreen() {
   const router = useRouter();
-  const { isAuthenticated, isLoading } = useAuthStore();
+  const { isAuthenticated, isLoading, user } = useAuthStore();
   const { theme } = useThemeStore();
-  const colors = theme === "dark" ? Colors.dark : Colors.light;
+  // Use gender-based theme for consistent colors
+  const colors = getColorScheme(theme === "dark", user?.gender);
 
   const fadeAnim = new Animated.Value(0);
   const scaleAnim = new Animated.Value(0.3);

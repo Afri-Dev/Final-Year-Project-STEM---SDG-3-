@@ -16,13 +16,14 @@ import {
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useAuthStore, useThemeStore } from '../../services/store';
-import { Colors, Typography, Spacing, BorderRadius, Shadows, getLevelInfo } from '../../constants/theme';
+import { Colors, Typography, Spacing, BorderRadius, Shadows, getLevelInfo, getColorScheme } from '../../constants/theme';
 
 export default function ProfileScreen() {
   const router = useRouter();
   const { user, refreshUser, logout } = useAuthStore();
   const { theme, toggleTheme } = useThemeStore();
-  const colors = theme === 'dark' ? Colors.dark : Colors.light;
+  // Use gender-based theme for consistent colors
+  const colors = getColorScheme(theme === 'dark', user?.gender);
 
   const [refreshing, setRefreshing] = React.useState(false);
 
@@ -45,9 +46,9 @@ export default function ProfileScreen() {
 
   // Sample badges (replace with actual data from database)
   const sampleBadges = [
-    { id: 1, name: 'Biology Basics', icon: 'science', unlocked: true, color: colors.science },
-    { id: 2, name: 'Physics Pro', icon: 'bolt', unlocked: true, color: colors.primary },
-    { id: 3, name: 'Chemistry Champion', icon: 'biotech', unlocked: true, color: colors.technology },
+    { id: 1, name: 'Biology Basics', icon: 'science', unlocked: false, color: colors.science },
+    { id: 2, name: 'Physics Pro', icon: 'bolt', unlocked: false, color: colors.primary },
+    { id: 3, name: 'Chemistry Champion', icon: 'biotech', unlocked: false, color: colors.technology },
     { id: 4, name: 'Earth Explorer', icon: 'public', unlocked: false, color: colors.textSecondary },
     { id: 5, name: 'Math Master', icon: 'calculate', unlocked: false, color: colors.textSecondary },
     { id: 6, name: 'Space Cadet', icon: 'rocket-launch', unlocked: false, color: colors.textSecondary },
@@ -56,10 +57,10 @@ export default function ProfileScreen() {
   // Sample streak data (replace with actual data)
   const streakData = [
     { day: 'Mon', completed: true },
-    { day: 'Tue', completed: true },
-    { day: 'Wed', completed: true },
-    { day: 'Thu', completed: true },
-    { day: 'Fri', completed: true },
+    { day: 'Tue', completed: false },
+    { day: 'Wed', completed: false },
+    { day: 'Thu', completed: false },
+    { day: 'Fri', completed: false },
     { day: 'Sat', completed: false },
     { day: 'Sun', completed: false },
   ];
@@ -72,7 +73,7 @@ export default function ProfileScreen() {
           <MaterialIcons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={[styles.headerTitle, { color: colors.text }]}>Profile</Text>
-        <TouchableOpacity onPress={() => {/* Open settings */}}>
+        <TouchableOpacity onPress={() => router.push('/settings')}>
           <MaterialIcons name="settings" size={24} color={colors.text} />
         </TouchableOpacity>
       </View>
@@ -177,6 +178,37 @@ export default function ProfileScreen() {
           </View>
         </View>
 
+
+                {/* Streak Section */}
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Streak</Text>
+          <View style={[styles.streakCard, { backgroundColor: colors.surface }, Shadows.sm]}>
+            <View style={styles.streakDays}>
+              {streakData.map((day, index) => (
+                <View key={index} style={styles.streakDay}>
+                  <Text style={[styles.streakDayLabel, { color: colors.textSecondary }]}>
+                    {day.day}
+                  </Text>
+                  <View
+                    style={[
+                      styles.streakDayCircle,
+                      {
+                        backgroundColor: day.completed
+                          ? colors.primary
+                          : colors.disabled,
+                      },
+                    ]}
+                  >
+                    {day.completed && (
+                      <MaterialIcons name="check" size={16} color="#ffffff" />
+                    )}
+                  </View>
+                </View>
+              ))}
+            </View>
+          </View>
+        </View>
+        
         {/* Badges Section */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: colors.text }]}>Badges</Text>
@@ -215,35 +247,7 @@ export default function ProfileScreen() {
           </View>
         </View>
 
-        {/* Streak Section */}
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>Streak</Text>
-          <View style={[styles.streakCard, { backgroundColor: colors.surface }, Shadows.sm]}>
-            <View style={styles.streakDays}>
-              {streakData.map((day, index) => (
-                <View key={index} style={styles.streakDay}>
-                  <Text style={[styles.streakDayLabel, { color: colors.textSecondary }]}>
-                    {day.day}
-                  </Text>
-                  <View
-                    style={[
-                      styles.streakDayCircle,
-                      {
-                        backgroundColor: day.completed
-                          ? colors.primary
-                          : colors.disabled,
-                      },
-                    ]}
-                  >
-                    {day.completed && (
-                      <MaterialIcons name="check" size={16} color="#ffffff" />
-                    )}
-                  </View>
-                </View>
-              ))}
-            </View>
-          </View>
-        </View>
+
 
         {/* Settings Section */}
         <View style={styles.section}>

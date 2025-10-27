@@ -17,7 +17,7 @@ import {
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useAuthStore, useLearningStore, useThemeStore } from '../../services/store';
-import { Colors, Typography, Spacing, BorderRadius, Shadows, getLevelInfo } from '../../constants/theme';
+import { Colors, Typography, Spacing, BorderRadius, Shadows, getLevelInfo, getColorScheme } from '../../constants/theme';
 import { LinearGradient } from 'expo-linear-gradient';
 
 export default function HomeScreen() {
@@ -25,7 +25,7 @@ export default function HomeScreen() {
   const { user, refreshUser } = useAuthStore();
   const { subjects, loadSubjects } = useLearningStore();
   const { theme } = useThemeStore();
-  const colors = theme === 'dark' ? Colors.dark : Colors.light;
+  const colors = getColorScheme(theme === 'dark', user?.gender);
 
   const [refreshing, setRefreshing] = React.useState(false);
 
@@ -227,36 +227,8 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* Recent Activity */}
-        <View style={styles.recentSection}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>
-            Continue Learning
-          </Text>
-
-          {subjects.slice(0, 2).map((subject) => (
-            <TouchableOpacity
-              key={subject.id}
-              style={[styles.recentCard, { backgroundColor: colors.surface }, Shadows.sm]}
-              onPress={() => router.push(`/subject/${subject.category}`)}
-            >
-              <View style={[styles.recentIcon, { backgroundColor: `${subject.color}20` }]}>
-                <MaterialIcons name={subject.icon as any} size={32} color={subject.color} />
-              </View>
-              <View style={styles.recentInfo}>
-                <Text style={[styles.recentTitle, { color: colors.text }]}>
-                  {subject.name}
-                </Text>
-                <Text style={[styles.recentSubtitle, { color: colors.textSecondary }]}>
-                  {subject.totalTopics} topics available
-                </Text>
-              </View>
-              <MaterialIcons name="chevron-right" size={24} color={colors.textSecondary} />
-            </TouchableOpacity>
-          ))}
-        </View>
-
         {/* Bottom spacing */}
-        <View style={{ height: 100 }} />
+        <View style={{ height: 10 }} />
       </ScrollView>
     </View>
   );

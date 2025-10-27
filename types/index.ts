@@ -22,6 +22,7 @@ export interface User {
   createdAt: string;
   lastActive: string;
   theme: "light" | "dark" | "auto";
+  themeColor?: string; // Gender-based thematic color
 }
 
 export interface UserProgress {

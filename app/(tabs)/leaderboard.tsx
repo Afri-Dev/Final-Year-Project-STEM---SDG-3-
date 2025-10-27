@@ -17,14 +17,15 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useThemeStore, useAuthStore } from '../../services/store';
-import { Colors, Typography, Spacing, BorderRadius, Shadows } from '../../constants/theme';
+import { Colors, Typography, Spacing, BorderRadius, Shadows, getColorScheme } from '../../constants/theme';
 import database from '../../services/database';
 import { LeaderboardEntry } from '../../types';
 
 export default function LeaderboardScreen() {
   const { theme } = useThemeStore();
   const { user } = useAuthStore();
-  const colors = theme === 'dark' ? Colors.dark : Colors.light;
+  // Use gender-based theme for consistent colors
+  const colors = getColorScheme(theme === 'dark', user?.gender);
 
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [userRank, setUserRank] = useState<number>(0);
@@ -106,7 +107,7 @@ export default function LeaderboardScreen() {
     return (
       <View style={styles.podiumContainer}>
         <Text style={[styles.sectionTitle, { color: colors.text }]}>
-          🏆 Top Champions
+          🏆 Top Champions 🏆
         </Text>
         <View style={styles.podium}>
           {podiumOrder.map((entry, index) => {
@@ -157,7 +158,7 @@ export default function LeaderboardScreen() {
     return (
       <View style={styles.listContainer}>
         <Text style={[styles.sectionTitle, { color: colors.text }]}>
-          📊 All Rankings
+          All Rankings
         </Text>
         
         {restOfList.map((entry, index) => {
