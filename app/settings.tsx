@@ -14,13 +14,14 @@ import {
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useThemeStore, useAuthStore } from '../services/store';
-import { Colors, Typography, Spacing, BorderRadius, Shadows } from '../constants/theme';
+import { Colors, Typography, Spacing, BorderRadius, Shadows, getColorScheme } from '../constants/theme';
 
 export default function SettingsScreen() {
   const router = useRouter();
   const { theme, toggleTheme } = useThemeStore();
-  const { logout } = useAuthStore();
-  const colors = theme === 'dark' ? Colors.dark : Colors.light;
+  const { user, logout } = useAuthStore();
+  // Use gender-based theme for consistent colors
+  const colors = getColorScheme(theme === 'dark', user?.gender);
 
   const handleLogout = async () => {
     await logout();
@@ -29,6 +30,18 @@ export default function SettingsScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
+      {/* Header - Match profile header styling */}
+      <View style={[styles.header, { backgroundColor: colors.background }]}>
+        <TouchableOpacity 
+          style={styles.backButton}
+          onPress={() => router.back()}
+        >
+          <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+        </TouchableOpacity>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>Settings</Text>
+        <View style={styles.headerSpacer} />
+      </View>
+
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -147,6 +160,25 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.xl + 20, // Match profile header padding
+    paddingBottom: Spacing.md,
+  },
+  backButton: {
+    padding: Spacing.sm,
+    borderRadius: BorderRadius.full,
+  },
+  headerTitle: {
+    fontSize: Typography.fontSize.xl,
+    fontWeight: Typography.fontWeight.bold,
+  },
+  headerSpacer: {
+    width: 40, // Same width as back button for centering title
+  },
   scrollView: {
     flex: 1,
   },
@@ -164,19 +196,18 @@ const styles = StyleSheet.create({
   settingItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: Spacing.md,
+    paddingVertical: Spacing.lg,
     paddingHorizontal: Spacing.lg,
     borderRadius: BorderRadius.lg,
     marginBottom: Spacing.sm,
+    gap: Spacing.md,
   },
   settingText: {
     flex: 1,
     fontSize: Typography.fontSize.base,
     fontWeight: Typography.fontWeight.medium,
-    marginLeft: Spacing.md,
   },
   logoutButton: {
     marginTop: Spacing.lg,
-    justifyContent: 'center',
   },
 });
