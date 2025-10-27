@@ -174,6 +174,16 @@ export interface Streak {
   xpEarned: number;
 }
 
+export interface Notification {
+  id: string;
+  userId: string;
+  title: string;
+  message: string;
+  type: 'badge' | 'quiz' | 'streak' | 'lesson' | 'leaderboard' | 'general';
+  read: boolean;
+  createdAt: string;
+}
+
 // ==================== AI Types ====================
 
 export interface AIRecommendation {
@@ -214,6 +224,7 @@ export interface DatabaseSchema {
   achievements: Achievement;
   streaks: Streak;
   leaderboard: LeaderboardEntry;
+  notifications: Notification;
 }
 
 // ==================== State Management Types ====================

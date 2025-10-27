@@ -4,7 +4,7 @@
  * Based on: assets/PHOTOS/home_screen_dashboard/code.html
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -17,6 +17,7 @@ import {
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useAuthStore, useLearningStore, useThemeStore } from '../../services/store';
+import database from '../../services/database';
 import { Colors, Typography, Spacing, BorderRadius, Shadows, getLevelInfo, getColorScheme } from '../../constants/theme';
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -28,16 +29,30 @@ export default function HomeScreen() {
   const colors = getColorScheme(theme === 'dark', user?.gender);
 
   const [refreshing, setRefreshing] = React.useState(false);
+  const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0);
 
   useEffect(() => {
     loadSubjects();
+    loadUnreadNotificationsCount();
   }, []);
+
+  const loadUnreadNotificationsCount = async () => {
+    if (!user) return;
+    
+    try {
+      const count = await database.getUnreadNotificationsCount(user.id);
+      setUnreadNotificationsCount(count);
+    } catch (error) {
+      console.error('Failed to load unread notifications count:', error);
+    }
+  };
 
   const onRefresh = async () => {
     setRefreshing(true);
     await Promise.all([
       refreshUser(),
       loadSubjects(),
+      loadUnreadNotificationsCount(),
     ]);
     setRefreshing(false);
   };
@@ -80,9 +95,13 @@ export default function HomeScreen() {
         >
           <MaterialIcons name="notifications" size={24} color={colors.text} />
           {/* Notification badge */}
-          <View style={[styles.notificationBadge, { backgroundColor: colors.error }]}>
-            <Text style={styles.notificationBadgeText}>3</Text>
-          </View>
+          {unreadNotificationsCount > 0 && (
+            <View style={[styles.notificationBadge, { backgroundColor: colors.error }]}>
+              <Text style={styles.notificationBadgeText}>
+                {unreadNotificationsCount > 5 ? '5+' : unreadNotificationsCount.toString()}
+              </Text>
+            </View>
+          )}
         </TouchableOpacity>
       </View>
 

@@ -31,7 +31,7 @@ import {
 } from '../types';
 
 // Database version for migrations
-const DATABASE_VERSION = 8;
+const DATABASE_VERSION = 9;
 
 class DatabaseService {
   private db: SQLite.SQLiteDatabase | null = null;
@@ -310,6 +310,20 @@ class DatabaseService {
         version INTEGER PRIMARY KEY
       );
     `);
+    
+    // Notifications table
+    await this.db.execAsync(`
+      CREATE TABLE IF NOT EXISTS notifications (
+        id TEXT PRIMARY KEY,
+        userId TEXT NOT NULL,
+        title TEXT NOT NULL,
+        message TEXT NOT NULL,
+        type TEXT NOT NULL,
+        read INTEGER DEFAULT 0,
+        createdAt TEXT NOT NULL,
+        FOREIGN KEY (userId) REFERENCES users(id)
+      );
+    `);
   }
 
   /**
@@ -422,6 +436,27 @@ class DatabaseService {
           console.log('✅ Migration v8: Updated educationLevel format');
         } catch (error) {
           console.log('⚠️  Migration v8: May already be applied');
+        }
+      }
+
+      // Migration v9: Add notifications table
+      if (currentVersion < 9) {
+        try {
+          await this.db.execAsync(`
+            CREATE TABLE IF NOT EXISTS notifications (
+              id TEXT PRIMARY KEY,
+              userId TEXT NOT NULL,
+              title TEXT NOT NULL,
+              message TEXT NOT NULL,
+              type TEXT NOT NULL,
+              read INTEGER DEFAULT 0,
+              createdAt TEXT NOT NULL,
+              FOREIGN KEY (userId) REFERENCES users(id)
+            );
+          `);
+          console.log('✅ Migration v9: Added notifications table');
+        } catch (error) {
+          console.log('⚠️  Migration v9: May already be applied');
         }
       }
 
@@ -879,6 +914,76 @@ class DatabaseService {
     );
 
     return entry?.rank || 0;
+  }
+
+  // ==================== NOTIFICATION METHODS ====================
+
+  async createNotification(userId: string, title: string, message: string, type: string): Promise<void> {
+    if (!this.db) throw new Error('Database not initialized');
+
+    const id = `notification-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const createdAt = new Date().toISOString();
+
+    await this.db.runAsync(
+      'INSERT INTO notifications (id, userId, title, message, type, read, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [id, userId, title, message, type, 0, createdAt]
+    );
+  }
+
+  async getNotifications(userId: string): Promise<any[]> {
+    if (!this.db) throw new Error('Database not initialized');
+    
+    return await this.db.getAllAsync<any>(
+      'SELECT * FROM notifications WHERE userId = ? ORDER BY createdAt DESC',
+      [userId]
+    );
+  }
+
+  async getUnreadNotificationsCount(userId: string): Promise<number> {
+    if (!this.db) throw new Error('Database not initialized');
+    
+    const result = await this.db.getFirstAsync<{ count: number }>(
+      'SELECT COUNT(*) as count FROM notifications WHERE userId = ? AND read = 0',
+      [userId]
+    );
+    
+    return result?.count || 0;
+  }
+
+  async markNotificationAsRead(notificationId: string): Promise<void> {
+    if (!this.db) throw new Error('Database not initialized');
+    
+    await this.db.runAsync(
+      'UPDATE notifications SET read = 1 WHERE id = ?',
+      [notificationId]
+    );
+  }
+
+  async markAllNotificationsAsRead(userId: string): Promise<void> {
+    if (!this.db) throw new Error('Database not initialized');
+    
+    await this.db.runAsync(
+      'UPDATE notifications SET read = 1 WHERE userId = ?',
+      [userId]
+    );
+  }
+
+  async deleteNotification(notificationId: string): Promise<void> {
+    if (!this.db) throw new Error('Database not initialized');
+    
+    await this.db.runAsync(
+      'DELETE FROM notifications WHERE id = ?',
+      [notificationId]
+    );
+  }
+
+  async clearAllNotifications(userId: string): Promise<void> {
+    if (!this.db) throw new Error('Database not initialized');
+    
+    await this.db.runAsync(
+      'DELETE FROM notifications WHERE userId = ?',
+      [userId]
+    );
   }
 }
 
