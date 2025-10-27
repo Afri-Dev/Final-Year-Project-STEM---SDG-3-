@@ -31,7 +31,7 @@ import {
 } from '../types';
 
 // Database version for migrations
-const DATABASE_VERSION = 7;
+const DATABASE_VERSION = 8;
 
 class DatabaseService {
   private db: SQLite.SQLiteDatabase | null = null;
@@ -348,17 +348,14 @@ class DatabaseService {
           const users = await this.db.getAllAsync<any>('SELECT id, gradeLevel, educationLevel FROM users');
           for (const user of users) {
             if (!user.educationLevel && user.gradeLevel) {
-              let educationLevel = 'secondary';
+              let educationLevel = 'none';
               const grade = user.gradeLevel;
 
-              if (['1', '2', '3', '4', '5', '6'].includes(grade)) {
-                educationLevel = 'primary';
-              } else if (['undergraduate', 'college'].includes(grade.toLowerCase())) {
-                educationLevel = 'undergraduate';
-              } else if (['masters', 'postgraduate'].includes(grade.toLowerCase())) {
-                educationLevel = 'masters';
-              } else if (['phd'].includes(grade.toLowerCase())) {
-                educationLevel = 'phd';
+              // Map grades to new education level structure
+              if (['1', '2', '3', '4', '5', '6', '7'].includes(grade)) {
+                educationLevel = grade; // Primary grades 1-7
+              } else if (['form1', 'form2', 'form3', 'form4', 'form5'].includes(grade.toLowerCase())) {
+                educationLevel = grade.toLowerCase(); // Secondary forms 1-5
               } else if (['none'].includes(grade.toLowerCase())) {
                 educationLevel = 'none';
               }
@@ -398,6 +395,33 @@ class DatabaseService {
           console.log('✅ Migration v7: Added themeColor column');
         } catch (error) {
           console.log('⚠️  Migration v7: May already be applied');
+        }
+      }
+
+      // Migration v8: Update educationLevel for users with old format
+      if (currentVersion < 8) {
+        try {
+          const users = await this.db.getAllAsync<any>('SELECT id, educationLevel FROM users');
+          for (const user of users) {
+            let educationLevel = user.educationLevel || 'none';
+            
+            // Map old education levels to new format
+            if (['primary'].includes(educationLevel)) {
+              educationLevel = '1'; // Default to grade 1 for primary
+            } else if (['secondary'].includes(educationLevel)) {
+              educationLevel = 'form1'; // Default to form 1 for secondary
+            } else if (['undergraduate', 'masters', 'phd'].includes(educationLevel)) {
+              educationLevel = 'none'; // Map higher education to none
+            }
+            
+            await this.db.runAsync(
+              'UPDATE users SET educationLevel = ? WHERE id = ?',
+              [educationLevel, user.id]
+            );
+          }
+          console.log('✅ Migration v8: Updated educationLevel format');
+        } catch (error) {
+          console.log('⚠️  Migration v8: May already be applied');
         }
       }
 

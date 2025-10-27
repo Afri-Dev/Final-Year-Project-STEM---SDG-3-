@@ -58,6 +58,7 @@ export default function WelcomeScreen() {
   const [registerAge, setRegisterAge] = useState("");
   const [registerGender, setRegisterGender] = useState<GenderType | "">("");
   const [registerGrade, setRegisterGrade] = useState("");
+  const [selectedGrade, setSelectedGrade] = useState(""); // For grade selection within education level
   const [registerPassword, setRegisterPassword] = useState("");
   const [registerConfirmPassword, setRegisterConfirmPassword] = useState("");
   const [showRegisterPassword, setShowRegisterPassword] = useState(false);
@@ -223,9 +224,23 @@ export default function WelcomeScreen() {
       }
       setAgeError("");
 
-      // Validate other fields
-      if (!registerGender || !registerGrade) {
-        Alert.alert("Required Fields", "Please fill in all fields");
+      // Validate education level
+      if (!registerGrade) {
+        Alert.alert("Required Fields", "Please select an education level");
+        triggerShake();
+        return;
+      }
+
+      // Validate grade selection for primary/secondary education
+      if ((registerGrade === "primary" || registerGrade === "secondary") && !selectedGrade) {
+        Alert.alert("Required Fields", "Please select your grade");
+        triggerShake();
+        return;
+      }
+
+      // Validate gender
+      if (!registerGender) {
+        Alert.alert("Required Fields", "Please select your gender");
         triggerShake();
         return;
       }
@@ -243,13 +258,18 @@ export default function WelcomeScreen() {
       }
 
       // Create user with email and password
+      // For primary/secondary education, we'll store the specific grade in educationLevel
+      const educationLevel = (registerGrade === "primary" || registerGrade === "secondary") 
+        ? selectedGrade 
+        : registerGrade;
+
       await register(
         {
           name: registerName,
           email: registerEmail,
           age,
           gender: registerGender as any,
-          educationLevel: registerGrade as any,
+          educationLevel: educationLevel as any,
           avatarId: "default",
           theme: theme,
         },
@@ -379,14 +399,31 @@ export default function WelcomeScreen() {
     const educationLevels = [
       { label: "Primary Education", value: "primary" },
       { label: "Secondary Education", value: "secondary" },
-      { label: "Undergraduate Education", value: "undergraduate" },
-      { label: "Master's Education", value: "masters" },
-      { label: "PhD Education", value: "phd" },
       { label: "No Formal Education", value: "none" },
+    ];
+
+    // Grade options based on education level
+    const primaryGrades = [
+      { label: "Grade 1", value: "1" },
+      { label: "Grade 2", value: "2" },
+      { label: "Grade 3", value: "3" },
+      { label: "Grade 4", value: "4" },
+      { label: "Grade 5", value: "5" },
+      { label: "Grade 6", value: "6" },
+      { label: "Grade 7", value: "7" },
+    ];
+
+    const secondaryGrades = [
+      { label: "Form 1", value: "form1" },
+      { label: "Form 2", value: "form2" },
+      { label: "Form 3", value: "form3" },
+      { label: "Form 4", value: "form4" },
+      { label: "Form 5", value: "form5" },
     ];
 
     return (
       <View style={styles.educationGrid}>
+        {/* Education Level Selection */}
         {educationLevels.map((education) => (
           <TouchableOpacity
             key={education.value}
@@ -416,6 +453,65 @@ export default function WelcomeScreen() {
             </Text>
           </TouchableOpacity>
         ))}
+
+        {/* Grade Selection based on Education Level */}
+        {registerGrade === "primary" && (
+          <View style={styles.gradeGrid}>
+            {primaryGrades.map((grade) => (
+              <TouchableOpacity
+                key={grade.value}
+                style={[
+                  styles.gradeOption,
+                  {
+                    backgroundColor:
+                      selectedGrade === grade.value ? colors.primary : colors.surface,
+                    borderColor:
+                      selectedGrade === grade.value ? colors.primary : colors.border,
+                  },
+                ]}
+                onPress={() => setSelectedGrade(grade.value)}
+              >
+                <Text
+                  style={[
+                    styles.gradeOptionText,
+                    { color: selectedGrade === grade.value ? "#ffffff" : colors.text },
+                  ]}
+                >
+                  {grade.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
+
+        {registerGrade === "secondary" && (
+          <View style={styles.gradeGrid}>
+            {secondaryGrades.map((grade) => (
+              <TouchableOpacity
+                key={grade.value}
+                style={[
+                  styles.gradeOption,
+                  {
+                    backgroundColor:
+                      selectedGrade === grade.value ? colors.primary : colors.surface,
+                    borderColor:
+                      selectedGrade === grade.value ? colors.primary : colors.border,
+                  },
+                ]}
+                onPress={() => setSelectedGrade(grade.value)}
+              >
+                <Text
+                  style={[
+                    styles.gradeOptionText,
+                    { color: selectedGrade === grade.value ? "#ffffff" : colors.text },
+                  ]}
+                >
+                  {grade.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
       </View>
     );
   };

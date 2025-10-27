@@ -12,7 +12,7 @@ export interface User {
   username?: string;
   age: number;
   gender: "male" | "female";
-  educationLevel: "primary" | "secondary" | "undergraduate" | "masters" | "phd" | "none";
+  educationLevel: "1" | "2" | "3" | "4" | "5" | "6" | "7" | "form1" | "form2" | "form3" | "form4" | "form5" | "none";
   avatarId: string;
   xp: number;
   level: number;
