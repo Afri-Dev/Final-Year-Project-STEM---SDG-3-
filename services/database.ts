@@ -31,7 +31,7 @@ import {
 } from '../types';
 
 // Database version for migrations
-const DATABASE_VERSION = 11;
+const DATABASE_VERSION = 12;
 
 class DatabaseService {
   private db: SQLite.SQLiteDatabase | null = null;
@@ -343,6 +343,7 @@ class DatabaseService {
         date TEXT NOT NULL,
         completed INTEGER DEFAULT 0,
         xpEarned INTEGER DEFAULT 0,
+        wasActiveForThreeMinutes INTEGER DEFAULT 0,
         FOREIGN KEY (userId) REFERENCES users(id)
       );
     `);
@@ -526,6 +527,16 @@ class DatabaseService {
           console.log('✅ Migration v10: Updated streaks table for 3-minute activity tracking');
         } catch (error) {
           console.log('⚠️  Migration v10: May already be applied');
+        }
+      }
+
+      // Migration v12: Add wasActiveForThreeMinutes column to properly track 3-minute activity
+      if (currentVersion < 12) {
+        try {
+          await this.db.execAsync(`ALTER TABLE streaks ADD COLUMN wasActiveForThreeMinutes INTEGER DEFAULT 0;`);
+          console.log('✅ Migration v12: Added wasActiveForThreeMinutes column');
+        } catch (error) {
+          console.log('⚠️  Migration v12: May already be applied');
         }
       }
 
@@ -1022,8 +1033,8 @@ class DatabaseService {
     
     // Insert today's streak entry (completed = 1 means logged in today)
     await this.db.runAsync(
-      'INSERT INTO streaks (id, userId, date, completed, xpEarned) VALUES (?, ?, ?, ?, ?)',
-      [id, userId, todayStr, 1, 25]
+      'INSERT INTO streaks (id, userId, date, completed, xpEarned, wasActiveForThreeMinutes) VALUES (?, ?, ?, ?, ?, ?)',
+      [id, userId, todayStr, 1, 25, 0]
     );
 
     // Update user streak data
@@ -1047,7 +1058,7 @@ class DatabaseService {
     const wasActive = durationSeconds >= 180 ? 1 : 0;
     
     await this.db.runAsync(
-      'UPDATE streaks SET xpEarned = ? WHERE userId = ? AND date = ?',
+      'UPDATE streaks SET wasActiveForThreeMinutes = ? WHERE userId = ? AND date = ?',
       [wasActive, userId, date]
     );
   }
@@ -1071,7 +1082,7 @@ class DatabaseService {
     const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
     // Get all streak records for the current week
-    const streakRecords = await this.db.getAllAsync<Streak>(
+    const streakRecords = await this.db.getAllAsync<Streak & { wasActiveForThreeMinutes?: number }>(
       `SELECT * FROM streaks WHERE userId = ? AND date >= ? AND date <= ?`,
       [
         userId,
@@ -1081,7 +1092,7 @@ class DatabaseService {
     );
 
     // Create a map of completed dates for quick lookup
-    const streakMap = new Map<string, Streak>();
+    const streakMap = new Map<string, Streak & { wasActiveForThreeMinutes?: number }>();
     streakRecords.forEach(record => {
       streakMap.set(record.date, record);
     });
@@ -1098,7 +1109,7 @@ class DatabaseService {
         day: weekDays[i],
         date: dateStr,
         completed: !!streakRecord, // User logged in on this day
-        wasActiveForThreeMinutes: !!streakRecord && streakRecord.xpEarned === 1 // User was active for 3+ minutes
+        wasActiveForThreeMinutes: !!streakRecord && streakRecord.wasActiveForThreeMinutes === 1 // User was active for 3+ minutes
       });
     }
 

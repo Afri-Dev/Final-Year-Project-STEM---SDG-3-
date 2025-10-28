@@ -175,6 +175,7 @@ export interface Streak {
   date: string; // ISO date string
   completed: boolean;
   xpEarned: number;
+  wasActiveForThreeMinutes?: number;
 }
 
 export interface Notification {

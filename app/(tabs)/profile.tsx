@@ -237,6 +237,13 @@ export default function ProfileScreen() {
                 <Text style={[styles.legendText, { color: colors.textSecondary }]}>3+ min active</Text>
               </View>
             </View>
+            {/* Additional information about 3+ minute activity */}
+            <View style={[styles.streakInfo, { borderTopColor: colors.border }]}>
+              <MaterialIcons name="info" size={16} color={colors.textSecondary} />
+              <Text style={[styles.streakInfoText, { color: colors.textSecondary }]}>
+                Green checkmarks indicate days you were active for 3+ minutes
+              </Text>
+            </View>
           </View>
         </View>
         
@@ -529,6 +536,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     gap: Spacing.lg,
+    marginBottom: Spacing.sm,
   },
   legendItem: {
     flexDirection: 'row',
@@ -542,6 +550,19 @@ const styles = StyleSheet.create({
   },
   legendText: {
     fontSize: Typography.fontSize.xs,
+  },
+  streakInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+    marginTop: Spacing.sm,
+    paddingTop: Spacing.sm,
+    borderTopWidth: 1,
+    borderTopColor: Colors.light.border,
+  },
+  streakInfoText: {
+    fontSize: Typography.fontSize.xs,
+    flex: 1,
   },
   settingItem: {
     flexDirection: 'row',
