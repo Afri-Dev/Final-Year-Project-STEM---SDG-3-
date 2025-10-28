@@ -44,11 +44,6 @@ export default function WelcomeScreen() {
 
   const [activeTab, setActiveTab] = useState<TabType>("register");
   const [showPassword, setShowPassword] = useState(false);
-  const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-  const [firstNameError, setFirstNameError] = useState("");
-  const [lastNameError, setLastNameError] = useState("");
-  const [ageError, setAgeError] = useState("");
 
   // Login form state
   const [loginEmail, setLoginEmail] = useState("");
@@ -66,6 +61,13 @@ export default function WelcomeScreen() {
   const [registerPassword, setRegisterPassword] = useState("");
   const [registerConfirmPassword, setRegisterConfirmPassword] = useState("");
   const [showRegisterPassword, setShowRegisterPassword] = useState(false);
+
+  // Real-time validation states
+  const [firstNameError, setFirstNameError] = useState("");
+  const [lastNameError, setLastNameError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [ageError, setAgeError] = useState("");
 
   // Use gender-based theme - dynamically updates when gender selection changes
   const colors = useMemo(() => {
@@ -213,13 +215,13 @@ export default function WelcomeScreen() {
         triggerShake();
         return;
       }
-      // Check if first name contains spaces
+      // Check if first name contains spaces (real-time validation should have caught this)
       if (/\s/.test(registerFirstName)) {
         setFirstNameError("First name cannot contain spaces");
         triggerShake();
         return;
       }
-      setFirstNameError("");
+      // No need to clear firstNameError here since real-time validation handles it
 
       // Validate last name
       if (!registerLastName || registerLastName.length < 2) {
@@ -227,35 +229,26 @@ export default function WelcomeScreen() {
         triggerShake();
         return;
       }
-      // Check if last name contains spaces
+      // Check if last name contains spaces (real-time validation should have caught this)
       if (/\s/.test(registerLastName)) {
         setLastNameError("Last name cannot contain spaces");
         triggerShake();
         return;
       }
-      setLastNameError("");
-
-      // Validate middle name (if provided)
-      if (registerMiddleName) {
-        // Check if middle name contains spaces
-        if (/\s/.test(registerMiddleName)) {
-          Alert.alert("Invalid Middle Name", "Middle name cannot contain spaces");
-          triggerShake();
-          return;
-        }
-      }
+      // No need to clear lastNameError here since real-time validation handles it
 
       // Validate email
       if (!validateEmail(registerEmail)) {
         triggerShake();
         return;
       }
-      // Check if email contains spaces
+      // Check if email contains spaces (real-time validation should have caught this)
       if (/\s/.test(registerEmail)) {
         setEmailError("Email cannot contain spaces");
         triggerShake();
         return;
       }
+      // No need to clear emailError here since real-time validation handles it
 
       // Validate age
       const age = parseInt(registerAge);
@@ -862,7 +855,14 @@ export default function WelcomeScreen() {
                     value={registerFirstName}
                     onChangeText={(text) => {
                       setRegisterFirstName(text);
-                      if (firstNameError) setFirstNameError("");
+                      // Real-time validation for spaces
+                      if (/\s/.test(text)) {
+                        setFirstNameError("First name cannot contain spaces");
+                      } else if (text.length > 0 && text.length < 2) {
+                        setFirstNameError("First name must be at least 2 characters");
+                      } else {
+                        setFirstNameError("");
+                      }
                     }}
                   />
                 </View>
@@ -902,7 +902,14 @@ export default function WelcomeScreen() {
                     value={registerLastName}
                     onChangeText={(text) => {
                       setRegisterLastName(text);
-                      if (lastNameError) setLastNameError("");
+                      // Real-time validation for spaces
+                      if (/\s/.test(text)) {
+                        setLastNameError("Last name cannot contain spaces");
+                      } else if (text.length > 0 && text.length < 2) {
+                        setLastNameError("Last name must be at least 2 characters");
+                      } else {
+                        setLastNameError("");
+                      }
                     }}
                   />
                 </View>
@@ -942,6 +949,10 @@ export default function WelcomeScreen() {
                     value={registerMiddleName}
                     onChangeText={(text) => {
                       setRegisterMiddleName(text);
+                      // Real-time validation for spaces
+                      if (/\s/.test(text)) {
+                        Alert.alert("Invalid Middle Name", "Middle name cannot contain spaces");
+                      }
                     }}
                   />
                 </View>
@@ -973,7 +984,14 @@ export default function WelcomeScreen() {
                     value={registerEmail}
                     onChangeText={(text) => {
                       setRegisterEmail(text);
-                      if (emailError) validateEmail(text);
+                      // Real-time validation for spaces and email format
+                      if (/\s/.test(text)) {
+                        setEmailError("Email cannot contain spaces");
+                      } else if (text && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(text)) {
+                        setEmailError("Please enter a valid email address");
+                      } else {
+                        setEmailError("");
+                      }
                     }}
                     onBlur={() => validateEmail(registerEmail)}
                     autoCapitalize="none"
