@@ -213,6 +213,12 @@ export default function WelcomeScreen() {
         triggerShake();
         return;
       }
+      // Check if first name contains spaces
+      if (/\s/.test(registerFirstName)) {
+        setFirstNameError("First name cannot contain spaces");
+        triggerShake();
+        return;
+      }
       setFirstNameError("");
 
       // Validate last name
@@ -221,10 +227,32 @@ export default function WelcomeScreen() {
         triggerShake();
         return;
       }
+      // Check if last name contains spaces
+      if (/\s/.test(registerLastName)) {
+        setLastNameError("Last name cannot contain spaces");
+        triggerShake();
+        return;
+      }
       setLastNameError("");
+
+      // Validate middle name (if provided)
+      if (registerMiddleName) {
+        // Check if middle name contains spaces
+        if (/\s/.test(registerMiddleName)) {
+          Alert.alert("Invalid Middle Name", "Middle name cannot contain spaces");
+          triggerShake();
+          return;
+        }
+      }
 
       // Validate email
       if (!validateEmail(registerEmail)) {
+        triggerShake();
+        return;
+      }
+      // Check if email contains spaces
+      if (/\s/.test(registerEmail)) {
+        setEmailError("Email cannot contain spaces");
         triggerShake();
         return;
       }
