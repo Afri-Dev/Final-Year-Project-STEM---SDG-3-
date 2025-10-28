@@ -134,12 +134,7 @@ export default function RootLayout() {
         <Stack.Screen
           name="subject/[category]"
           options={{
-            headerShown: true,
-            title: 'Subject',
-            headerStyle: {
-              backgroundColor: theme === 'dark' ? Colors.dark.surface : Colors.light.surface,
-            },
-            headerTintColor: theme === 'dark' ? Colors.dark.text : Colors.light.text,
+            headerShown: false,
           }}
         />
         <Stack.Screen

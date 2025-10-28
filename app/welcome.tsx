@@ -16,6 +16,7 @@ import {
   Alert,
   Animated,
   Dimensions,
+  Image,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -72,8 +73,9 @@ export default function WelcomeScreen() {
   }, [theme, registerGender]);
 
   // Animation values
-  const [slideAnim] = useState(new Animated.Value(0));
+  const [slideAnim] = useState(new Animated.Value(activeTab === "login" ? 0 : 1));
   const shakeAnim = useRef(new Animated.Value(0)).current;
+  const [tabLayouts, setTabLayouts] = useState({ login: 0, register: 0 });
 
   const handleTabSwitch = (tab: TabType) => {
     setActiveTab(tab);
@@ -353,7 +355,7 @@ export default function WelcomeScreen() {
         {genders.map((gender) => {
           const isSelected = registerGender === gender.value;
           const borderColor = isSelected ? gender.themeColor : colors.border;
-          const backgroundColor = isSelected ? gender.themeColor : colors.surface;
+          const backgroundColor = isSelected ? `${gender.themeColor}20` : colors.surface;
           
           return (
             <TouchableOpacity
@@ -369,23 +371,23 @@ export default function WelcomeScreen() {
               onPress={() => setRegisterGender(gender.value)}
             >
               <MaterialIcons
-                name={gender.value === "male" ? "face" : "face-3"}
+                name={gender.value === "male" ? "face" : "face-4"}
                 size={24}
-                color={isSelected ? "#ffffff" : colors.text}
+                color={isSelected ? gender.themeColor : colors.text}
               />
               <Text
                 style={[
                   styles.pickerOptionText,
                   {
-                    color: isSelected ? "#ffffff" : colors.text,
+                    color: isSelected ? gender.themeColor : colors.text,
                   },
                 ]}
               >
                 {gender.label}
               </Text>
               {isSelected && (
-                <View style={styles.themeColorIndicator}>
-                  <MaterialIcons name="palette" size={16} color="#ffffff" />
+                <View style={[styles.selectedIndicator, { backgroundColor: gender.themeColor }]}>
+                  <MaterialIcons name="check" size={16} color="#ffffff" />
                 </View>
               )}
             </TouchableOpacity>
@@ -397,9 +399,9 @@ export default function WelcomeScreen() {
 
   const renderGradePicker = () => {
     const educationLevels = [
-      { label: "Primary Education", value: "primary" },
-      { label: "Secondary Education", value: "secondary" },
-      { label: "No Formal Education", value: "none" },
+      { label: "Primary Education", value: "primary", icon: "school", color: colors.science },
+      { label: "Secondary Education", value: "secondary", icon: "school", color: colors.technology },
+      { label: "No Formal Education", value: "none", icon: "block", color: colors.textSecondary },
     ];
 
     // Grade options based on education level
@@ -424,92 +426,83 @@ export default function WelcomeScreen() {
     return (
       <View style={styles.educationGrid}>
         {/* Education Level Selection */}
-        {educationLevels.map((education) => (
-          <TouchableOpacity
-            key={education.value}
-            style={[
-              styles.educationOption,
-              {
-                backgroundColor:
-                  registerGrade === education.value ? colors.primary : colors.surface,
-                borderColor:
-                  registerGrade === education.value ? colors.primary : colors.border,
-              },
-            ]}
-            onPress={() => setRegisterGrade(education.value)}
-          >
-            <MaterialIcons
-              name="school"
-              size={20}
-              color={registerGrade === education.value ? "#ffffff" : colors.text}
-            />
-            <Text
+        {educationLevels.map((education) => {
+          const isSelected = registerGrade === education.value;
+          return (
+            <TouchableOpacity
+              key={education.value}
               style={[
-                styles.educationOptionText,
-                { color: registerGrade === education.value ? "#ffffff" : colors.text },
+                styles.educationOption,
+                {
+                  backgroundColor: isSelected ? `${education.color}20` : colors.surface,
+                  borderColor: isSelected ? education.color : colors.border,
+                },
               ]}
+              onPress={() => {
+                setRegisterGrade(education.value);
+                setSelectedGrade(""); // Reset selected grade when changing education level
+              }}
             >
-              {education.label}
-            </Text>
-          </TouchableOpacity>
-        ))}
+              <MaterialIcons
+                name={education.icon as any}
+                size={20}
+                color={isSelected ? education.color : colors.text}
+              />
+              <Text
+                style={[
+                  styles.educationOptionText,
+                  { color: isSelected ? education.color : colors.text },
+                ]}
+              >
+                {education.label}
+              </Text>
+              {isSelected && (
+                <View style={[styles.selectedIndicator, { backgroundColor: education.color }]}>
+                  <MaterialIcons name="check" size={16} color="#ffffff" />
+                </View>
+              )}
+            </TouchableOpacity>
+          );
+        })}
 
         {/* Grade Selection based on Education Level */}
-        {registerGrade === "primary" && (
-          <View style={styles.gradeGrid}>
-            {primaryGrades.map((grade) => (
-              <TouchableOpacity
-                key={grade.value}
-                style={[
-                  styles.gradeOption,
-                  {
-                    backgroundColor:
-                      selectedGrade === grade.value ? colors.primary : colors.surface,
-                    borderColor:
-                      selectedGrade === grade.value ? colors.primary : colors.border,
-                  },
-                ]}
-                onPress={() => setSelectedGrade(grade.value)}
-              >
-                <Text
-                  style={[
-                    styles.gradeOptionText,
-                    { color: selectedGrade === grade.value ? "#ffffff" : colors.text },
-                  ]}
-                >
-                  {grade.label}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        )}
-
-        {registerGrade === "secondary" && (
-          <View style={styles.gradeGrid}>
-            {secondaryGrades.map((grade) => (
-              <TouchableOpacity
-                key={grade.value}
-                style={[
-                  styles.gradeOption,
-                  {
-                    backgroundColor:
-                      selectedGrade === grade.value ? colors.primary : colors.surface,
-                    borderColor:
-                      selectedGrade === grade.value ? colors.primary : colors.border,
-                  },
-                ]}
-                onPress={() => setSelectedGrade(grade.value)}
-              >
-                <Text
-                  style={[
-                    styles.gradeOptionText,
-                    { color: selectedGrade === grade.value ? "#ffffff" : colors.text },
-                  ]}
-                >
-                  {grade.label}
-                </Text>
-              </TouchableOpacity>
-            ))}
+        {(registerGrade === "primary" || registerGrade === "secondary") && (
+          <View>
+            <Text style={[styles.subLabel, { color: colors.textSecondary }]}>
+              Select your {registerGrade === "primary" ? "Grade" : "Form"}:
+            </Text>
+            <View style={styles.gradeGrid}>
+              {(registerGrade === "primary" ? primaryGrades : secondaryGrades).map((grade) => {
+                const isSelected = selectedGrade === grade.value;
+                return (
+                  <TouchableOpacity
+                    key={grade.value}
+                    style={[
+                      styles.gradeOption,
+                      {
+                        backgroundColor: isSelected ? colors.primary : colors.surface,
+                        borderColor: isSelected ? colors.primary : colors.border,
+                      },
+                    ]}
+                    onPress={() => setSelectedGrade(grade.value)}
+                  >
+                    <Text
+                      style={[
+                        styles.gradeOptionText,
+                        { color: isSelected ? "#ffffff" : colors.text },
+                      ]}
+                    >
+                      {grade.label}
+                    </Text>
+                    {isSelected && (
+                      <View style={styles.smallSelectedIndicator}>
+                        <MaterialIcons name="check" size={12} color="#ffffff" />
+                      </View>
+                    )}
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
           </View>
         )}
       </View>
@@ -612,17 +605,16 @@ export default function WelcomeScreen() {
             </TouchableOpacity>
           </View>
 
-          <Animated.View
+          {/* Simplified tab indicator - using percentage-based positioning */}
+          <View 
             style={[
               styles.tabIndicator,
               {
                 backgroundColor: colors.primary,
-                left: slideAnim.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: ["2%", "52%"],
-                }),
-              },
-            ]}
+                width: '48%',
+                left: activeTab === 'login' ? '1%' : '51%',
+              }
+            ]} 
           />
         </View>
 
@@ -1146,13 +1138,21 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: Spacing.md,
     borderWidth: 3,
-    borderColor: "rgba(255, 255, 255, 0.3)",
+    borderColor: "rgb(255, 255, 255)",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
   },
   logoText: {
     fontSize: 36,
     fontWeight: Typography.fontWeight.bold,
     color: "#ffffff",
     marginBottom: Spacing.xs,
+    textShadowColor: "rgba(0, 0, 0, 0.3)",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
   tagline: {
     fontSize: Typography.fontSize.base,
@@ -1171,6 +1171,7 @@ const styles = StyleSheet.create({
     padding: 4,
     marginBottom: Spacing.lg,
     position: "relative",
+    ...Shadows.md,
   },
   tabButtons: {
     flexDirection: "row",
@@ -1195,11 +1196,13 @@ const styles = StyleSheet.create({
     width: "46%",
     height: 4,
     borderRadius: 2,
+    ...Shadows.sm,
   },
   formsContainer: {
     borderRadius: BorderRadius.xl,
     padding: Spacing.xl,
     marginBottom: Spacing.lg,
+    ...Shadows.lg,
   },
   form: {
     gap: Spacing.lg,
@@ -1208,11 +1211,12 @@ const styles = StyleSheet.create({
     fontSize: Typography.fontSize["3xl"],
     fontWeight: Typography.fontWeight.bold,
     textAlign: "center",
+    marginBottom: Spacing.xs,
   },
   formSubtitle: {
     fontSize: Typography.fontSize.base,
     textAlign: "center",
-    marginBottom: Spacing.sm,
+    marginBottom: Spacing.lg,
   },
   inputGroup: {
     gap: Spacing.sm,
@@ -1229,6 +1233,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     height: 56,
     gap: Spacing.sm,
+    ...Shadows.sm,
   },
   input: {
     flex: 1,
@@ -1247,6 +1252,7 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.lg,
     overflow: "hidden",
     marginTop: Spacing.sm,
+    ...Shadows.md,
   },
   buttonGradient: {
     flexDirection: "row",
@@ -1275,18 +1281,21 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
     width: "48%",
     position: "relative" as "relative",
+    ...Shadows.sm,
   },
   pickerOptionText: {
     fontSize: Typography.fontSize.sm,
     fontWeight: Typography.fontWeight.medium,
   },
-  themeColorIndicator: {
+  selectedIndicator: {
     position: "absolute" as "absolute",
     top: 4,
     right: 4,
-    backgroundColor: "rgba(255, 255, 255, 0.3)",
-    borderRadius: BorderRadius.full,
-    padding: 2,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    justifyContent: "center",
+    alignItems: "center",
   },
   gradeGrid: {
     flexDirection: "row",
@@ -1300,6 +1309,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: BorderRadius.lg,
     borderWidth: 2,
+    ...Shadows.sm,
   },
   gradeOptionText: {
     fontSize: Typography.fontSize.lg,
@@ -1317,6 +1327,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     gap: Spacing.sm,
     marginBottom: Spacing.sm,
+    ...Shadows.sm,
   },
   educationOptionText: {
     fontSize: Typography.fontSize.sm,
@@ -1348,6 +1359,7 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.lg,
     borderWidth: 2,
     gap: Spacing.sm,
+    ...Shadows.md,
   },
   guestButtonText: {
     fontSize: Typography.fontSize.base,
@@ -1384,11 +1396,28 @@ const styles = StyleSheet.create({
   },
   passwordStrengthFill: {
     height: "100%",
-    borderRadius: 2,
   },
   passwordStrengthText: {
     fontSize: Typography.fontSize.xs,
     fontWeight: Typography.fontWeight.medium,
     textAlign: "right",
   },
+  subLabel: {
+    fontSize: Typography.fontSize.sm,
+    fontWeight: Typography.fontWeight.medium,
+    marginBottom: Spacing.sm,
+    marginTop: Spacing.md,
+  },
+  smallSelectedIndicator: {
+    position: "absolute" as "absolute",
+    top: 2,
+    right: 2,
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: "rgba(255, 255, 255, 0.3)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
 });
