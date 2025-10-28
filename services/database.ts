@@ -31,11 +31,27 @@ import {
 } from '../types';
 
 // Database version for migrations
-const DATABASE_VERSION = 10;
+const DATABASE_VERSION = 11;
 
 class DatabaseService {
   private db: SQLite.SQLiteDatabase | null = null;
   private isInitialized = false;
+
+  /**
+   * Close the database connection if it's open
+   */
+  async close(): Promise<void> {
+    if (this.db) {
+      try {
+        await this.db.closeAsync();
+        this.db = null;
+        this.isInitialized = false;
+        console.log('✅ Database connection closed');
+      } catch (error) {
+        console.error('❌ Error closing database:', error);
+      }
+    }
+  }
 
   /**
    * Initialize database and create tables
@@ -50,11 +66,24 @@ class DatabaseService {
       if (needsReset) {
         console.log('🔄 Detected old schema with breaking changes, resetting database...');
         try {
+          // Close any existing connection first
+          await this.close();
+          
+          // Add a small delay to ensure the database is fully closed
+          await new Promise(resolve => setTimeout(resolve, 100));
+          
+          // Now try to delete the database
           await SQLite.deleteDatabaseAsync('stem_learning.db');
           console.log('✅ Old database deleted successfully');
         } catch (deleteError) {
           console.log('⚠️  Database delete failed or file does not exist:', deleteError);
+          // Even if we can't delete, we can still try to continue with a fresh connection
         }
+      }
+
+      // Ensure we don't have an existing connection
+      if (this.db) {
+        await this.close();
       }
 
       // Open database
@@ -77,6 +106,12 @@ class DatabaseService {
       console.log('✅ Database initialization complete');
     } catch (error) {
       console.error('❌ Database initialization failed:', error);
+      // Close any open connections on error
+      try {
+        await this.close();
+      } catch (closeError) {
+        console.error('❌ Error closing database after initialization failure:', closeError);
+      }
       throw error;
     }
   }
@@ -85,8 +120,9 @@ class DatabaseService {
    * Check if database needs to be reset due to schema changes
    */
   private async checkNeedsSchemaReset(): Promise<boolean> {
+    let db: SQLite.SQLiteDatabase | null = null;
     try {
-      const db = await SQLite.openDatabaseAsync('stem_learning.db');
+      db = await SQLite.openDatabaseAsync('stem_learning.db');
       
       // Try to query with the old backtick syntax
       // If this succeeds, we have an old schema
@@ -97,17 +133,36 @@ class DatabaseService {
         const tableInfo = await db.getAllAsync('PRAGMA table_info(subjects)');
         const hasOldOrderColumn = tableInfo.some((col: any) => col.name === '`order`' || col.name === 'order');
         
-        await db.closeAsync();
+        try {
+          await db.closeAsync();
+        } catch (closeError) {
+          // Ignore close errors during schema check
+        }
+        db = null;
         
         // If we found the table, assume it needs reset for v6
         return true;
       } catch (error) {
         // If query fails, database might be corrupt or have old schema
-        await db.closeAsync();
+        try {
+          if (db) {
+            await db.closeAsync();
+          }
+        } catch (closeError) {
+          // Ignore close errors during schema check
+        }
+        db = null;
         return true;
       }
     } catch (error) {
-      // Database doesn't exist yet
+      // Database doesn't exist yet or can't be opened
+      try {
+        if (db) {
+          await db.closeAsync();
+        }
+      } catch (closeError) {
+        // Ignore close errors when database doesn't exist
+      }
       return false;
     }
   }
@@ -122,6 +177,9 @@ class DatabaseService {
     await this.db.execAsync(`
       CREATE TABLE IF NOT EXISTS users (
         id TEXT PRIMARY KEY,
+        firstName TEXT NOT NULL,
+        lastName TEXT NOT NULL,
+        middleName TEXT,
         name TEXT NOT NULL,
         email TEXT UNIQUE NOT NULL,
         username TEXT UNIQUE,
@@ -471,6 +529,44 @@ class DatabaseService {
         }
       }
 
+      // Migration v11: Add firstName, lastName, and middleName columns to users table
+      if (currentVersion < 11) {
+        try {
+          // Add new columns
+          await this.db.execAsync(`ALTER TABLE users ADD COLUMN firstName TEXT;`);
+          await this.db.execAsync(`ALTER TABLE users ADD COLUMN lastName TEXT;`);
+          await this.db.execAsync(`ALTER TABLE users ADD COLUMN middleName TEXT;`);
+          
+          // Update existing users to populate new fields from name field
+          const users = await this.db.getAllAsync<any>('SELECT id, name FROM users');
+          for (const user of users) {
+            // Split the existing name into components
+            const nameParts = (user.name || '').trim().split(' ');
+            if (nameParts.length >= 2) {
+              const firstName = nameParts[0] || '';
+              const lastName = nameParts[nameParts.length - 1] || '';
+              const middleName = nameParts.length > 2 ? nameParts.slice(1, -1).join(' ') : null;
+              
+              await this.db.runAsync(
+                'UPDATE users SET firstName = ?, lastName = ?, middleName = ? WHERE id = ?',
+                [firstName, lastName, middleName, user.id]
+              );
+            } else {
+              // If only one name part or no name, use it as first name and empty last name
+              const firstName = (user.name || '').trim() || '';
+              await this.db.runAsync(
+                'UPDATE users SET firstName = ?, lastName = ? WHERE id = ?',
+                [firstName, '', user.id]
+              );
+            }
+          }
+          
+          console.log('✅ Migration v11: Added firstName, lastName, and middleName columns');
+        } catch (error) {
+          console.log('⚠️  Migration v11: May already be applied');
+        }
+      }
+
       await this.db.runAsync('DELETE FROM database_version');
       await this.db.runAsync('INSERT INTO database_version (version) VALUES (?)', [DATABASE_VERSION]);
     }
@@ -586,16 +682,21 @@ class DatabaseService {
     if (!this.db) throw new Error('Database not initialized');
 
     const id = `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    const username = userData.email.split('@')[0].toLowerCase();
+    const username = (userData.email.split('@')[0] || '').toLowerCase();
     const now = new Date().toISOString();
     
     // Set theme color based on gender
     const themeColor = userData.gender === 'female' ? '#FF48E3' : '#13a4ec';
 
+    // Create full name from first, middle, and last names
+    const name = userData.middleName 
+      ? `${userData.firstName || ''} ${ userData.middleName || ''} ${userData.lastName || ''}`.trim()
+      : `${userData.firstName || ''} ${userData.lastName || ''}`.trim();
+
     const user: User = {
       id,
       ...userData,
-      username,
+      username: username || '',
       xp: 0,
       level: 1,
       currentStreak: 0,
@@ -607,9 +708,9 @@ class DatabaseService {
     };
 
     await this.db.runAsync(
-      `INSERT INTO users (id, name, email, username, password, age, gender, educationLevel, avatarId, xp, level, currentStreak, longestStreak, totalBadges, createdAt, lastActive, theme, themeColor)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [user.id, user.name, user.email, username, password, user.age, user.gender, user.educationLevel, user.avatarId, user.xp, user.level, user.currentStreak, user.longestStreak, user.totalBadges, user.createdAt, user.lastActive, user.theme, themeColor]
+      `INSERT INTO users (id, name, firstName, lastName, middleName, email, username, password, age, gender, educationLevel, avatarId, xp, level, currentStreak, longestStreak, totalBadges, createdAt, lastActive, theme, themeColor)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [user.id, name || '', user.firstName || '', user.lastName || '', user.middleName || null, user.email || '', user.username || '', password, user.age || 0, user.gender || '', user.educationLevel || '', user.avatarId || 'default', user.xp, user.level, user.currentStreak, user.longestStreak, user.totalBadges, user.createdAt || '', user.lastActive || '', user.theme || 'light', user.themeColor || null]
     );
 
     await SecureStore.setItemAsync('current_user_id', id);
@@ -619,13 +720,25 @@ class DatabaseService {
   async authenticateUser(email: string, password: string): Promise<User | null> {
     if (!this.db) throw new Error('Database not initialized');
 
-    const user = await this.db.getFirstAsync<User>(
+    const user = await this.db.getFirstAsync<User & { name: string; firstName: string; lastName: string; middleName?: string }>(
       'SELECT * FROM users WHERE email = ? AND password = ?',
       [email.toLowerCase(), password]
     );
 
     if (user) {
       await SecureStore.setItemAsync('current_user_id', user.id);
+      
+      // Ensure the name field is properly constructed from firstName, lastName, and middleName
+      if (!user.name && user.firstName) {
+        user.name = user.middleName 
+          ? `${user.firstName} ${user.middleName} ${user.lastName}` 
+          : `${user.firstName} ${user.lastName}`;
+      }
+      
+      // Ensure all required fields have proper values
+      user.name = user.name || '';
+      user.firstName = user.firstName || '';
+      user.lastName = user.lastName || '';
     }
 
     return user || null;
@@ -637,30 +750,78 @@ class DatabaseService {
     const userId = await SecureStore.getItemAsync('current_user_id');
     if (!userId) return null;
 
-    const user = await this.db.getFirstAsync<User>(
+    const user = await this.db.getFirstAsync<User & { name: string; firstName: string; lastName: string; middleName?: string }>(
       'SELECT * FROM users WHERE id = ?',
       [userId]
     );
 
-    return user || null;
+    if (!user) return null;
+
+    // Ensure the name field is properly constructed from firstName, lastName, and middleName
+    if (!user.name && user.firstName) {
+      user.name = user.middleName 
+        ? `${user.firstName} ${user.middleName} ${user.lastName}` 
+        : `${user.firstName} ${user.lastName}`;
+    }
+    
+    // Ensure all required fields have proper values
+    user.name = user.name || '';
+    user.firstName = user.firstName || '';
+    user.lastName = user.lastName || '';
+
+    return user;
   }
 
   async getUser(userId: string): Promise<User | null> {
     if (!this.db) throw new Error('Database not initialized');
 
-    const user = await this.db.getFirstAsync<User>(
+    const user = await this.db.getFirstAsync<User & { name: string; firstName: string; lastName: string; middleName?: string }>(
       'SELECT * FROM users WHERE id = ?',
       [userId]
     );
 
-    return user || null;
+    if (!user) return null;
+
+    // Ensure the name field is properly constructed from firstName, lastName, and middleName
+    if (!user.name && user.firstName) {
+      user.name = user.middleName 
+        ? `${user.firstName} ${user.middleName} ${user.lastName}` 
+        : `${user.firstName} ${user.lastName}`;
+    }
+    
+    // Ensure all required fields have proper values
+    user.name = user.name || '';
+    user.firstName = user.firstName || '';
+    user.lastName = user.lastName || '';
+
+    return user;
   }
 
   async updateUser(userId: string, updates: Partial<User>): Promise<void> {
     if (!this.db) throw new Error('Database not initialized');
 
-    const fields = Object.keys(updates).map(key => `${key} = ?`).join(', ');
-    const values = [...Object.values(updates), userId];
+    // Filter out undefined values and ensure we have valid data
+    const filteredUpdates: Record<string, any> = {};
+    for (const [key, value] of Object.entries(updates)) {
+      if (value !== undefined) {
+        // Handle special cases for string fields
+        if (typeof value === 'string' && ['name', 'firstName', 'lastName', 'email', 'username', 'gender', 'educationLevel', 'avatarId', 'theme', 'themeColor'].includes(key)) {
+          filteredUpdates[key] = value || '';
+        } else if (key === 'middleName') {
+          // middleName can be null
+          filteredUpdates[key] = value || null;
+        } else {
+          filteredUpdates[key] = value;
+        }
+      }
+    }
+
+    if (Object.keys(filteredUpdates).length === 0) {
+      return; // Nothing to update
+    }
+
+    const fields = Object.keys(filteredUpdates).map(key => `${key} = ?`).join(', ');
+    const values = [...Object.values(filteredUpdates), userId];
 
     await this.db.runAsync(
       `UPDATE users SET ${fields} WHERE id = ?`,
@@ -997,15 +1158,30 @@ class DatabaseService {
     await this.db.execAsync('DELETE FROM leaderboard');
 
     // Get all users ordered by XP
-    const users = await this.db.getAllAsync<User>('SELECT * FROM users ORDER BY xp DESC');
-
+    const users = await this.db.getAllAsync<User & { name: string; firstName: string; lastName: string; middleName?: string }>('SELECT * FROM users ORDER BY xp DESC');
+    
+    // Update users to ensure name field is properly constructed
+    for (const user of users) {
+      if (!user.name && user.firstName) {
+        user.name = user.middleName 
+          ? `${user.firstName} ${user.middleName} ${user.lastName}` 
+          : `${user.firstName} ${user.lastName}`;
+      }
+    }
+    
     // Insert users into leaderboard with proper unique IDs
     let rank = 1;
     for (const user of users) {
       const id = `leaderboard-${user.id}`;
+      
+      // Create full name from first, middle, and last names
+      const userName = user.middleName 
+        ? `${user.firstName} ${user.middleName} ${user.lastName}` 
+        : `${user.firstName} ${user.lastName}`;
+        
       await this.db.runAsync(
         'INSERT OR REPLACE INTO leaderboard (id, userId, userName, avatarId, totalXp, level, rank, weeklyXp) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-        [id, user.id, user.name, user.avatarId, user.xp, user.level, rank, 0]
+        [id, user.id, userName, user.avatarId, user.xp, user.level, rank, 0]
       );
       rank++;
     }

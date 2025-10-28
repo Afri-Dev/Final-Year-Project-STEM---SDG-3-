@@ -12,6 +12,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useAuthStore, useThemeStore } from '../../services/store';
 import { Colors, Typography, Spacing, BorderRadius, Shadows, getLevelInfo, getColorScheme } from '../../constants/theme';
 import database from '../../services/database';
+import { User } from '../../types';
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -117,7 +118,9 @@ export default function ProfileScreen() {
           </View>
 
           <Text style={[styles.userName, { color: colors.text }]}>
-            {user.name}
+            {(user as User).middleName 
+              ? `${(user as User).firstName} ${(user as User).middleName} ${(user as User).lastName}` 
+              : `${(user as User).firstName} ${(user as User).lastName}`}
           </Text>
           <Text style={[styles.userLevel, { color: colors.textSecondary }]}>
             Level {levelInfo.currentLevel.level} - {levelInfo.currentLevel.title}

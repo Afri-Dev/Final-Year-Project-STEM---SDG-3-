@@ -46,7 +46,8 @@ export default function WelcomeScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  const [nameError, setNameError] = useState("");
+  const [firstNameError, setFirstNameError] = useState("");
+  const [lastNameError, setLastNameError] = useState("");
   const [ageError, setAgeError] = useState("");
 
   // Login form state
@@ -54,7 +55,9 @@ export default function WelcomeScreen() {
   const [loginPassword, setLoginPassword] = useState("");
 
   // Register form state
-  const [registerName, setRegisterName] = useState("");
+  const [registerFirstName, setRegisterFirstName] = useState("");
+  const [registerLastName, setRegisterLastName] = useState("");
+  const [registerMiddleName, setRegisterMiddleName] = useState("");
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerAge, setRegisterAge] = useState("");
   const [registerGender, setRegisterGender] = useState<GenderType | "">("");
@@ -82,7 +85,8 @@ export default function WelcomeScreen() {
     // Clear errors when switching tabs
     setEmailError("");
     setPasswordError("");
-    setNameError("");
+    setFirstNameError("");
+    setLastNameError("");
     setAgeError("");
     Animated.spring(slideAnim, {
       toValue: tab === "login" ? 0 : 1,
@@ -203,13 +207,21 @@ export default function WelcomeScreen() {
 
   const handleRegister = async () => {
     try {
-      // Validate name
-      if (!registerName || registerName.length < 2) {
-        setNameError("Name must be at least 2 characters");
+      // Validate first name
+      if (!registerFirstName || registerFirstName.length < 2) {
+        setFirstNameError("First name must be at least 2 characters");
         triggerShake();
         return;
       }
-      setNameError("");
+      setFirstNameError("");
+
+      // Validate last name
+      if (!registerLastName || registerLastName.length < 2) {
+        setLastNameError("Last name must be at least 2 characters");
+        triggerShake();
+        return;
+      }
+      setLastNameError("");
 
       // Validate email
       if (!validateEmail(registerEmail)) {
@@ -259,6 +271,11 @@ export default function WelcomeScreen() {
         return;
       }
 
+      // Create full name from first, middle, and last names
+      const fullName = registerMiddleName 
+        ? `${registerFirstName} ${registerMiddleName} ${registerLastName}` 
+        : `${registerFirstName} ${registerLastName}`;
+
       // Create user with email and password
       // For primary/secondary education, we'll store the specific grade in educationLevel
       const educationLevel = (registerGrade === "primary" || registerGrade === "secondary") 
@@ -267,7 +284,10 @@ export default function WelcomeScreen() {
 
       await register(
         {
-          name: registerName,
+          name: fullName,
+          firstName: registerFirstName,
+          lastName: registerLastName,
+          ...(registerMiddleName && { middleName: registerMiddleName }),
           email: registerEmail,
           age,
           gender: registerGender as any,
@@ -790,42 +810,113 @@ export default function WelcomeScreen() {
 
               <View style={styles.inputGroup}>
                 <Text style={[styles.label, { color: colors.text }]}>
-                  Full Name <Text style={styles.required}>*</Text>
+                  First Name <Text style={styles.required}>*</Text>
                 </Text>
                 <View
                   style={[
                     styles.inputWrapper,
                     {
                       backgroundColor: colors.background,
-                      borderColor: nameError ? colors.error : colors.border,
-                      borderWidth: nameError ? 2 : 1.5,
+                      borderColor: firstNameError ? colors.error : colors.border,
+                      borderWidth: firstNameError ? 2 : 1.5,
                     },
                   ]}
                 >
                   <MaterialIcons
                     name="person-outline"
                     size={20}
-                    color={nameError ? colors.error : colors.textSecondary}
+                    color={firstNameError ? colors.error : colors.textSecondary}
                   />
                   <TextInput
                     style={[styles.input, { color: colors.text }]}
-                    placeholder="Enter your full name"
+                    placeholder="Enter your first name"
                     placeholderTextColor={colors.textSecondary}
-                    value={registerName}
+                    value={registerFirstName}
                     onChangeText={(text) => {
-                      setRegisterName(text);
-                      if (nameError) setNameError("");
+                      setRegisterFirstName(text);
+                      if (firstNameError) setFirstNameError("");
                     }}
                   />
                 </View>
-                {nameError ? (
+                {firstNameError ? (
                   <View style={styles.errorContainer}>
                     <MaterialIcons name="error-outline" size={14} color={colors.error} />
                     <Text style={[styles.errorText, { color: colors.error }]}>
-                      {nameError}
+                      {firstNameError}
                     </Text>
                   </View>
                 ) : null}
+              </View>
+
+              <View style={styles.inputGroup}>
+                <Text style={[styles.label, { color: colors.text }]}>
+                  Last Name <Text style={styles.required}>*</Text>
+                </Text>
+                <View
+                  style={[
+                    styles.inputWrapper,
+                    {
+                      backgroundColor: colors.background,
+                      borderColor: lastNameError ? colors.error : colors.border,
+                      borderWidth: lastNameError ? 2 : 1.5,
+                    },
+                  ]}
+                >
+                  <MaterialIcons
+                    name="person-outline"
+                    size={20}
+                    color={lastNameError ? colors.error : colors.textSecondary}
+                  />
+                  <TextInput
+                    style={[styles.input, { color: colors.text }]}
+                    placeholder="Enter your last name"
+                    placeholderTextColor={colors.textSecondary}
+                    value={registerLastName}
+                    onChangeText={(text) => {
+                      setRegisterLastName(text);
+                      if (lastNameError) setLastNameError("");
+                    }}
+                  />
+                </View>
+                {lastNameError ? (
+                  <View style={styles.errorContainer}>
+                    <MaterialIcons name="error-outline" size={14} color={colors.error} />
+                    <Text style={[styles.errorText, { color: colors.error }]}>
+                      {lastNameError}
+                    </Text>
+                  </View>
+                ) : null}
+              </View>
+
+              <View style={styles.inputGroup}>
+                <Text style={[styles.label, { color: colors.text }]}>
+                  Middle Name (Optional)
+                </Text>
+                <View
+                  style={[
+                    styles.inputWrapper,
+                    {
+                      backgroundColor: colors.background,
+                      borderColor: colors.border,
+                      borderWidth: 1.5,
+                    },
+                  ]}
+                >
+                  <MaterialIcons
+                    name="person-outline"
+                    size={20}
+                    color={colors.textSecondary}
+                  />
+                  <TextInput
+                    style={[styles.input, { color: colors.text }]}
+                    placeholder="Enter your middle name (optional)"
+                    placeholderTextColor={colors.textSecondary}
+                    value={registerMiddleName}
+                    onChangeText={(text) => {
+                      setRegisterMiddleName(text);
+                    }}
+                  />
+                </View>
               </View>
 
               <View style={styles.inputGroup}>
