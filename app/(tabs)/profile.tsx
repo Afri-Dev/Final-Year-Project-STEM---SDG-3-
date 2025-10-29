@@ -211,6 +211,15 @@ export default function ProfileScreen() {
                         backgroundColor: day.completed
                           ? colors.primary
                           : colors.disabled,
+                        // Add a subtle shadow to make it pop
+                        shadowColor: '#000',
+                        shadowOffset: {
+                          width: 0,
+                          height: 1,
+                        },
+                        shadowOpacity: 0.1,
+                        shadowRadius: 1.41,
+                        elevation: 1,
                       },
                     ]}
                   >
@@ -218,22 +227,34 @@ export default function ProfileScreen() {
                       <MaterialIcons name="check" size={16} color="#ffffff" />
                     )}
                   </View>
-                  {/* Checkmark indicator for 3+ minutes of activity */}
-                  {day.wasActiveForThreeMinutes && (
-                    <View style={[styles.threeMinuteIndicator, { borderColor: colors.success }]}>
-                      <MaterialIcons name="check" size={12} color={colors.success} />
-                    </View>
-                  )}
+                  {/* 3+ minute activity indicator - always show, grey by default, green when achieved */}
+                  <View 
+                    style={[
+                      styles.threeMinuteIndicator,
+                      {
+                        backgroundColor: day.wasActiveForThreeMinutes ? '#10b981' : '#d1d5db',
+                        borderColor: day.wasActiveForThreeMinutes ? '#10b981' : '#d1d5db',
+                      }
+                    ]}
+                  >
+                    {day.wasActiveForThreeMinutes && (
+                      <MaterialIcons name="check" size={12} color="#ffffff" />
+                    )}
+                  </View>
                 </View>
               ))}
             </View>
             <View style={styles.streakLegend}>
               <View style={styles.legendItem}>
                 <View style={[styles.legendColorBox, { backgroundColor: colors.primary }]} />
-                <Text style={[styles.legendText, { color: colors.textSecondary }]}>Logged in</Text>
+                <Text style={[styles.legendText, { color: colors.textSecondary }]}>Streak day (logged in)</Text>
               </View>
               <View style={styles.legendItem}>
-                <View style={[styles.legendColorBox, { backgroundColor: colors.success, borderWidth: 2, borderColor: colors.success }]} />
+                <View style={[styles.legendColorBox, { backgroundColor: '#d1d5db' }]} />
+                <Text style={[styles.legendText, { color: colors.textSecondary }]}>Not 3+ min active</Text>
+              </View>
+              <View style={styles.legendItem}>
+                <View style={[styles.legendColorBox, { backgroundColor: '#10b981' }]} />
                 <Text style={[styles.legendText, { color: colors.textSecondary }]}>3+ min active</Text>
               </View>
             </View>
@@ -241,7 +262,7 @@ export default function ProfileScreen() {
             <View style={[styles.streakInfo, { borderTopColor: colors.border }]}>
               <MaterialIcons name="info" size={16} color={colors.textSecondary} />
               <Text style={[styles.streakInfoText, { color: colors.textSecondary }]}>
-                Green checkmarks indicate days you were active for 3+ minutes
+                Streak days show when you logged in. Grey dots show days under 3 minutes. Green dots show 3+ minute activity.
               </Text>
             </View>
           </View>
@@ -522,15 +543,24 @@ const styles = StyleSheet.create({
   },
   threeMinuteIndicator: {
     position: 'absolute',
-    bottom: -5,
-    right: -5,
+    bottom: -8,
+    right: -8,
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#d1d5db', // gray-300
     borderWidth: 2,
+    borderColor: '#d1d5db',
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 2,
   },
   streakLegend: {
     flexDirection: 'row',

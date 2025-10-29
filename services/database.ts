@@ -1054,12 +1054,17 @@ class DatabaseService {
   async updateStreakDuration(userId: string, date: string, durationSeconds: number): Promise<void> {
     if (!this.db) throw new Error('Database not initialized');
 
+    // Ensure the date is normalized to the start of the day to match the streak date format
+    const normalizedDate = new Date(date);
+    normalizedDate.setHours(0, 0, 0, 0);
+    const normalizedDateStr = normalizedDate.toISOString().split('T')[0];
+
     // Update the streak record to indicate if the user was active for at least 3 minutes (180 seconds)
     const wasActive = durationSeconds >= 180 ? 1 : 0;
     
     await this.db.runAsync(
       'UPDATE streaks SET wasActiveForThreeMinutes = ? WHERE userId = ? AND date = ?',
-      [wasActive, userId, date]
+      [wasActive, userId, normalizedDateStr]
     );
   }
 
@@ -1082,7 +1087,7 @@ class DatabaseService {
     const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
     // Get all streak records for the current week
-    const streakRecords = await this.db.getAllAsync<Streak & { wasActiveForThreeMinutes?: number }>(
+    const streakRecords = await this.db.getAllAsync<Streak>(
       `SELECT * FROM streaks WHERE userId = ? AND date >= ? AND date <= ?`,
       [
         userId,
@@ -1092,7 +1097,7 @@ class DatabaseService {
     );
 
     // Create a map of completed dates for quick lookup
-    const streakMap = new Map<string, Streak & { wasActiveForThreeMinutes?: number }>();
+    const streakMap = new Map<string, Streak>();
     streakRecords.forEach(record => {
       streakMap.set(record.date, record);
     });

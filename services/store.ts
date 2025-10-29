@@ -150,8 +150,11 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       const { sessionStartTime, user } = get();
       if (sessionStartTime && user) {
         const sessionDuration = Math.floor((Date.now() - sessionStartTime) / 1000);
-        const today = new Date().toISOString().split('T')[0];
-        await database.updateStreakDuration(user.id, today, sessionDuration);
+        // Normalize the date to match the streak date format
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const todayStr = today.toISOString().split('T')[0];
+        await database.updateStreakDuration(user.id, todayStr, sessionDuration);
       }
       
       await SecureStore.deleteItemAsync("current_user_id");
@@ -195,8 +198,11 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     const { sessionStartTime, user } = get();
     if (sessionStartTime && user) {
       const sessionDuration = Math.floor((Date.now() - sessionStartTime) / 1000);
-      const today = new Date().toISOString().split('T')[0];
-      await database.updateStreakDuration(user.id, today, sessionDuration);
+      // Normalize the date to match the streak date format
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const todayStr = today.toISOString().split('T')[0];
+      await database.updateStreakDuration(user.id, todayStr, sessionDuration);
       set({ sessionStartTime: null });
     }
   },
