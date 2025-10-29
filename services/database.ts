@@ -609,10 +609,46 @@ class DatabaseService {
 
   private async seedSubjects(): Promise<void> {
     const subjects = [
-      { id: 'sci', name: 'Science', category: 'science', description: 'Explore biology, chemistry, physics, and earth science', icon: 'science', color: '#3b82f6', totalTopics: 5, order: 1 },
-      { id: 'tech', name: 'Technology', category: 'technology', description: 'Learn programming, web development, and digital literacy', icon: 'computer', color: '#22c55e', totalTopics: 5, order: 2 },
-      { id: 'eng', name: 'Engineering', category: 'engineering', description: 'Discover mechanical, electrical, and civil engineering', icon: 'build', color: '#a855f7', totalTopics: 5, order: 3 },
-      { id: 'math', name: 'Mathematics', category: 'mathematics', description: 'Master algebra, geometry, calculus, and statistics', icon: 'calculate', color: '#ef4444', totalTopics: 5, order: 4 },
+      { 
+        id: 'sci', 
+        name: 'Science', 
+        category: 'science', 
+        description: 'Explore the wonders of the natural world through physics, chemistry, biology, and earth science. Conduct experiments and understand scientific principles that shape our universe.', 
+        icon: 'science', 
+        color: '#3b82f6', 
+        totalTopics: 6, 
+        order: 1 
+      },
+      { 
+        id: 'tech', 
+        name: 'Technology', 
+        category: 'technology', 
+        description: 'Dive into the digital world with programming, computer science, information technology, and digital literacy skills essential for the 21st century.', 
+        icon: 'computer', 
+        color: '#22c55e', 
+        totalTopics: 4, 
+        order: 2 
+      },
+      { 
+        id: 'eng', 
+        name: 'Engineering', 
+        category: 'engineering', 
+        description: 'Discover how things work and learn to design solutions to real-world problems through mechanical, civil, electrical, and other engineering disciplines.', 
+        icon: 'build', 
+        color: '#a855f7', 
+        totalTopics: 2, 
+        order: 3 
+      },
+      { 
+        id: 'math', 
+        name: 'Mathematics', 
+        category: 'mathematics', 
+        description: 'Master the language of numbers, shapes, and patterns through algebra, geometry, calculus, and statistics to solve complex problems.', 
+        icon: 'calculate', 
+        color: '#ef4444', 
+        totalTopics: 3, 
+        order: 4 
+      },
     ];
 
     for (const s of subjects) {
@@ -625,12 +661,34 @@ class DatabaseService {
 
   private async seedTopics(): Promise<void> {
     const topics = [
-      { id: 'sci-topic-001', subjectId: 'sci', title: 'The Cell', description: 'Cell structure and function', difficulty: 'beginner', estimatedMinutes: 30, order: 1 },
-      { id: 'sci-topic-002', subjectId: 'sci', title: 'Photosynthesis', description: 'How plants make food', difficulty: 'beginner', estimatedMinutes: 25, order: 2 },
-      { id: 'tech-topic-001', subjectId: 'tech', title: 'Intro to Programming', description: 'Learn coding basics', difficulty: 'beginner', estimatedMinutes: 40, order: 1 },
-      { id: 'tech-topic-002', subjectId: 'tech', title: 'HTML & CSS', description: 'Build web pages', difficulty: 'beginner', estimatedMinutes: 50, order: 2 },
-      { id: 'eng-topic-001', subjectId: 'eng', title: 'Simple Machines', description: 'Levers, pulleys, planes', difficulty: 'beginner', estimatedMinutes: 35, order: 1 },
-      { id: 'math-topic-001', subjectId: 'math', title: 'Fractions', description: 'Parts of numbers', difficulty: 'beginner', estimatedMinutes: 30, order: 1 },
+      // Science - Physics
+      { id: 'sci-phys-mechanics', subjectId: 'sci', title: 'Mechanics', description: 'Motion, forces, and energy', difficulty: 'beginner', estimatedMinutes: 45, order: 1 },
+      { id: 'sci-phys-electromag', subjectId: 'sci', title: 'Electromagnetism', description: 'Electricity, magnetism, and waves', difficulty: 'intermediate', estimatedMinutes: 50, order: 2 },
+      
+      // Science - Chemistry
+      { id: 'sci-chem-atomic', subjectId: 'sci', title: 'Atomic Theory', description: 'Atoms, elements, and the periodic table', difficulty: 'beginner', estimatedMinutes: 40, order: 3 },
+      { id: 'sci-chem-reactions', subjectId: 'sci', title: 'Reactions & Stoichiometry', description: 'Chemical equations and calculations', difficulty: 'intermediate', estimatedMinutes: 50, order: 4 },
+      
+      // Science - Biology
+      { id: 'sci-bio-cell', subjectId: 'sci', title: 'Cell & Genetics', description: 'Cell structure and genetic information', difficulty: 'beginner', estimatedMinutes: 45, order: 5 },
+      { id: 'sci-bio-organisms', subjectId: 'sci', title: 'Organisms & Systems', description: 'Biological systems and functions', difficulty: 'intermediate', estimatedMinutes: 50, order: 6 },
+      
+      // Technology - Computer Science
+      { id: 'tech-cs-programming', subjectId: 'tech', title: 'Programming Fundamentals', description: 'Basic programming concepts', difficulty: 'beginner', estimatedMinutes: 60, order: 1 },
+      { id: 'tech-cs-algorithms', subjectId: 'tech', title: 'Algorithms & Data', description: 'Problem-solving with algorithms', difficulty: 'intermediate', estimatedMinutes: 75, order: 2 },
+      
+      // Technology - ICT
+      { id: 'tech-ict-hardware', subjectId: 'tech', title: 'Hardware & Software', description: 'Computer components and systems', difficulty: 'beginner', estimatedMinutes: 40, order: 3 },
+      { id: 'tech-ict-digital', subjectId: 'tech', title: 'Digital Skills', description: 'Essential digital literacy', difficulty: 'beginner', estimatedMinutes: 35, order: 4 },
+      
+      // Engineering
+      { id: 'eng-mechanical', subjectId: 'eng', title: 'Mechanical Engineering', description: 'Forces, motion, and energy', difficulty: 'intermediate', estimatedMinutes: 50, order: 1 },
+      { id: 'eng-civil', subjectId: 'eng', title: 'Civil Engineering', description: 'Structures and infrastructure', difficulty: 'intermediate', estimatedMinutes: 55, order: 2 },
+      
+      // Mathematics
+      { id: 'math-algebra', subjectId: 'math', title: 'Algebra', description: 'Equations and expressions', difficulty: 'beginner', estimatedMinutes: 45, order: 1 },
+      { id: 'math-geometry', subjectId: 'math', title: 'Geometry', description: 'Shapes, angles, and measurements', difficulty: 'beginner', estimatedMinutes: 50, order: 2 },
+      { id: 'math-calculus', subjectId: 'math', title: 'Calculus', description: 'Rates of change and accumulation', difficulty: 'advanced', estimatedMinutes: 60, order: 3 }
     ];
 
     for (const t of topics) {
@@ -643,8 +701,42 @@ class DatabaseService {
 
   private async seedLessons(): Promise<void> {
     const lessons = [
-      { id: 'sci-topic-001-lesson-001', topicId: 'sci-topic-001', title: 'Cell Structure', content: 'Cells are the basic building blocks of all living things...', xpReward: 50, order: 1 },
-      { id: 'tech-topic-001-lesson-001', topicId: 'tech-topic-001', title: 'What is Programming?', content: 'Programming is creating instructions for computers...', xpReward: 50, order: 1 },
+      // Physics - Mechanics
+      { id: 'sci-phys-mech-001', topicId: 'sci-phys-mechanics', title: 'Units & Vectors', content: 'Understanding measurement units and vector quantities...', xpReward: 50, order: 1 },
+      { id: 'sci-phys-mech-002', topicId: 'sci-phys-mechanics', title: 'Motion Equations', content: 'Equations of motion and kinematic principles...', xpReward: 60, order: 2 },
+      { id: 'sci-phys-mech-003', topicId: 'sci-phys-mechanics', title: "Newton's Laws", content: 'The three laws of motion and their applications...', xpReward: 65, order: 3 },
+      
+      // Physics - Electromagnetism
+      { id: 'sci-phys-em-001', topicId: 'sci-phys-electromag', title: 'Circuits & Ohm\'s Law', content: 'Electric circuits and resistance...', xpReward: 55, order: 1 },
+      { id: 'sci-phys-em-002', topicId: 'sci-phys-electromag', title: 'Magnetism Basics', content: 'Magnetic fields and forces...', xpReward: 60, order: 2 },
+      
+      // Chemistry - Atomic Theory
+      { id: 'sci-chem-atomic-001', topicId: 'sci-chem-atomic', title: 'Atoms & Molecules', content: 'Basic atomic structure and molecular bonding...', xpReward: 50, order: 1 },
+      { id: 'sci-chem-atomic-002', topicId: 'sci-chem-atomic', title: 'Periodic Trends', content: 'Patterns in the periodic table...', xpReward: 55, order: 2 },
+      
+      // Computer Science - Programming
+      { id: 'tech-cs-prog-001', topicId: 'tech-cs-programming', title: 'Binary & Bits', content: 'Understanding binary number system...', xpReward: 60, order: 1 },
+      { id: 'tech-cs-prog-002', topicId: 'tech-cs-programming', title: 'Variables & Data Types', content: 'Working with different data types...', xpReward: 65, order: 2 },
+      
+      // Computer Science - Algorithms
+      { id: 'tech-cs-algo-001', topicId: 'tech-cs-algorithms', title: 'Sorting Algorithms', content: 'Different ways to sort data...', xpReward: 70, order: 1 },
+      { id: 'tech-cs-algo-002', topicId: 'tech-cs-algorithms', title: 'Arrays & Lists', content: 'Working with collections of data...', xpReward: 65, order: 2 },
+      
+      // Engineering - Mechanical
+      { id: 'eng-mech-001', topicId: 'eng-mechanical', title: 'Simple Machines', content: 'Levers, pulleys, and mechanical advantage...', xpReward: 60, order: 1 },
+      { id: 'eng-mech-002', topicId: 'eng-mechanical', title: 'Thermodynamics', content: 'Heat, work, and energy transfer...', xpReward: 70, order: 2 },
+      
+      // Mathematics - Algebra
+      { id: 'math-alg-001', topicId: 'math-algebra', title: 'Linear Equations', content: 'Solving equations with one variable...', xpReward: 50, order: 1 },
+      { id: 'math-alg-002', topicId: 'math-algebra', title: 'Quadratic Equations', content: 'Solving second-degree equations...', xpReward: 60, order: 2 },
+      
+      // Mathematics - Geometry
+      { id: 'math-geo-001', topicId: 'math-geometry', title: 'Angles & Lines', content: 'Types of angles and parallel lines...', xpReward: 50, order: 1 },
+      { id: 'math-geo-002', topicId: 'math-geometry', title: 'Triangles & Congruence', content: 'Properties of triangles and congruence...', xpReward: 55, order: 2 },
+      
+      // Mathematics - Calculus
+      { id: 'math-calc-001', topicId: 'math-calculus', title: 'Limits', content: 'Introduction to limits and continuity...', xpReward: 70, order: 1 },
+      { id: 'math-calc-002', topicId: 'math-calculus', title: 'Derivatives', content: 'Rates of change and differentiation...', xpReward: 75, order: 2 }
     ];
 
     for (const l of lessons) {
